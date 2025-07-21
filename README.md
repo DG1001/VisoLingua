@@ -2,46 +2,80 @@
 
 Ein benutzerfreundliches Desktop-Tool für Live-Übersetzung mit transparentem Overlay-Fenster, optimiert für chinesische Texte.
 
+## Screenshots
+
+### Scan-Fenster (Capture-Modus)
+![Scan Fenster](screen_scan.png)
+*Transparentes Overlay-Fenster zum Erfassen von Text für die Übersetzung*
+
+### Übersetzungsergebnis
+![Übersetzung](screen_translate.png)
+*Ergebnis-Fenster mit der übersetzten Text-Ausgabe*
+
 ## Features
 
+### 🎯 **Kernfunktionen**
 - **Transparentes Capture-Fenster**: Verschiebbar und größenverstellbar über anderen Anwendungen
-- **LLM-Integration**: Unterstützt Gemini 2.5 Flash und GPT-4 Mini/Nano
-- **Dual-Tab-System**: Wechsel zwischen Capture- und Ergebnis-Modus
+- **LLM-Integration**: Unterstützt Gemini 2.5 Flash und GPT-4 Mini/Nano  
+- **Ein-Klick-Übersetzung**: Einfach in das Overlay-Fenster klicken
+- **Dual-Modus-System**: Nahtloser Wechsel zwischen Capture- und Ergebnis-Modus
+
+### 🌏 **Sprachunterstützung**
 - **Chinesisch-Fokus**: Optimiert für vereinfachte und traditionelle chinesische Zeichen
-- **Caching**: Intelligente Zwischenspeicherung für identische Screenshots
-- **Verlauf**: Speicherung der letzten Übersetzungen
+- **Automatische Spracherkennung**: Erkennt Quellsprache automatisch
+- **Mehrsprachig**: Unterstützt viele Sprachen → Deutsch
 
-## Installation
+### ⚡ **Performance & UX**
+- **Intelligentes Caching**: Identische Screenshots werden nicht erneut übersetzt
+- **Verlauf**: Speicherung und Abruf der letzten Übersetzungen
+- **Cross-Platform**: Windows, Linux, macOS
+- **DPI-Aware**: Perfekte Darstellung auf High-DPI-Displays
 
-1. Python 3.8+ installieren
-2. Dependencies installieren:
+## 🚀 Quick Start
+
+### Installation
 ```bash
+# 1. Repository klonen oder herunterladen
+# 2. Python 3.8+ installieren
+# 3. Dependencies installieren
 pip install -r requirements.txt
 ```
 
-## Konfiguration
-
-1. Bei erstem Start werden Standardkonfigurationsdateien erstellt
-2. API-Schlüssel in den Einstellungen konfigurieren:
-   - Gemini API Key (Google AI Studio)
-   - OpenAI API Key (OpenAI Platform)
-
-## Verwendung
-
-1. Anwendung starten:
+### Erste Einrichtung
 ```bash
+# App starten
 python main.py
+
+# Bei erstem Start:
+# 1. API-Schlüssel in Settings eingeben
+# 2. Standard-LLM auswählen (empfohlen: Gemini 2.5 Flash)
+# 3. Fertig!
 ```
 
-2. **Capture-Modus**: Transparentes Fenster positionieren und auf den zu übersetzenden Bereich klicken
-3. **Ergebnis-Modus**: Übersetzung wird automatisch angezeigt
-4. **Wechseln**: Doppelklick auf Titelleiste oder Strg+Tab
+### API-Schlüssel konfigurieren
+- **Gemini API**: [Google AI Studio](https://aistudio.google.com/) → API Key erstellen
+- **OpenAI API**: [OpenAI Platform](https://platform.openai.com/) → Secret Key erstellen
 
-## Hotkeys
+## 💡 Verwendung
 
+### Grundlegende Bedienung
+1. **App starten**: `python main.py`
+2. **Scan-Fenster positionieren**: Über den zu übersetzenden Text ziehen
+3. **Screenshot aufnehmen**: Ins rote Overlay-Fenster klicken
+4. **Übersetzung erhalten**: Automatischer Wechsel zum Ergebnis-Fenster
+5. **Zurück zum Scan**: "Back to Capture" Button oder Fenster schließen
+
+### Modi wechseln
+- **Doppelklick** auf Overlay-Titelleiste → Zum Ergebnis-Fenster
+- **"Back to Capture"** Button → Zurück zum Scan-Fenster
+- **Fenster schließen** → Zurück zum Scan-Fenster
+- **X-Button am Overlay** → App beenden
+
+### Hotkeys & Shortcuts
 - `Strg+Tab`: Zwischen Modi wechseln
 - `Strg+C`: Übersetzung kopieren (im Ergebnis-Modus)
-- `Esc`: Ergebnis-Fenster schließen
+- `Esc`: Ergebnis-Fenster schließen (zurück zu Capture)
+- **Doppelklick Titelleiste**: Mode wechseln
 
 ## Projektstruktur
 
@@ -63,23 +97,56 @@ VisoLingua/
 └── requirements.txt     # Dependencies
 ```
 
-## Unterstützte LLMs
+## 🤖 Unterstützte LLMs
 
-- **Gemini 2.5 Flash**: Schnell und kostengünstig
-- **GPT-4.1 Mini**: Ausgewogenes Preis-Leistungs-Verhältnis  
-- **GPT-4.1 Nano**: Experimentell (verwendet GPT-4o-mini)
+| LLM | Geschwindigkeit | Kosten | Qualität | Empfehlung |
+|-----|----------------|--------|----------|------------|
+| **Gemini 2.5 Flash** | ⚡⚡⚡ | 💰 | ⭐⭐⭐⭐ | ✅ **Empfohlen** |
+| **GPT-4.1 Mini** | ⚡⚡ | 💰💰 | ⭐⭐⭐⭐⭐ | Für beste Qualität |
+| **GPT-4.1 Nano** | ⚡⚡⚡ | 💰 | ⭐⭐⭐ | Experimentell |
 
-## Systemanforderungen
+## 📋 Systemanforderungen
 
-- Python 3.8+
-- Windows/Linux/macOS
-- Internetverbindung für LLM-APIs
-- Mindestens 4GB RAM empfohlen
+### Minimum
+- **Python**: 3.8+
+- **Betriebssystem**: Windows 10+, Linux (GUI), macOS 10.14+
+- **RAM**: 2GB verfügbar
+- **Internet**: Für LLM-API-Calls
 
-## Lizenz
+### Empfohlen  
+- **Python**: 3.9+
+- **RAM**: 4GB+
+- **Display**: 1920x1080+ (High-DPI unterstützt)
+- **Internet**: Stabile Breitbandverbindung
 
-Dieses Projekt dient ausschließlich defensiven Sicherheitszwecken und Sprachlernunterstützung.
+## 🛠️ Technische Details
 
-## Entwicklung
+### Architektur
+- **Frontend**: tkinter (Cross-Platform GUI)
+- **Screenshot**: mss + PIL ImageGrab (Fallback)
+- **LLM-APIs**: aiohttp (Async requests)
+- **Threading**: Async/await für Non-blocking UI
 
-Basiert auf den Prinzipien des [OverText](https://github.com/thiswillbeyourgithub/OverText) Repositories für transparente Overlay-Funktionalität.
+### Besondere Features
+- **Thread-safe Screenshot-Erfassung** mit MSS-Fallbacks
+- **DPI-Awareness** für Windows High-DPI-Displays  
+- **Intelligentes Caching** mit MD5-Hash-Vergleich
+- **Robuste Fehlerbehandlung** mit mehreren Fallback-Methoden
+
+### Inspiriert von
+- [OverText](https://github.com/thiswillbeyourgithub/OverText) - Transparente Overlay-Funktionalität
+- Entwickelt für defensive Sicherheitszwecke und Sprachlernunterstützung
+
+## 🆘 Support & Troubleshooting
+
+### Häufige Probleme
+- **Fenster nicht sichtbar**: Transparenz in `config.ini` anpassen
+- **Screenshot-Fehler**: App läuft mit Administrator-Rechten starten
+- **API-Fehler**: API-Schlüssel und Internetverbindung prüfen
+- **DPI-Probleme**: Automatisch behoben mit DPI-Awareness
+
+Ausführliche Lösungen siehe: [SETUP.md](SETUP.md)
+
+## 📄 Lizenz
+
+Dieses Projekt dient ausschließlich **defensiven Sicherheitszwecken** und **Sprachlernunterstützung**.
