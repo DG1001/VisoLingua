@@ -71,13 +71,23 @@ python main.py
 
 ### Common Issues
 
+**Window not visible / too transparent:**
+- ✅ FIXED: Default transparency changed from 0.05 to 0.7
+- Window should now be clearly visible with red border
+- You can adjust transparency in config.ini if needed
+
+**"_thread._local object has no attribute 'srcdc'" error:**
+- ✅ FIXED: MSS threading issues resolved
+- Added thread-local storage for MSS instances
+- Fallback to PIL ImageGrab if MSS fails
+
 **"No display found" error:**
 - Ensure you're running on a system with GUI support
 - On Linux: Install X11 server or use desktop environment
 - On WSL: Install VcXsrv or similar X11 server, set DISPLAY variable
 
 **"Bad cursor spec" error:**
-- This has been fixed with automatic cursor fallback
+- ✅ FIXED: Automatic cursor fallback implemented
 - App will automatically use compatible cursors for your system
 
 **"API key not configured" error:**

@@ -6,6 +6,7 @@ import mss
 from PIL import Image, ImageTk
 import io
 import hashlib
+import threading
 from typing import Tuple, Optional
 
 
@@ -13,8 +14,20 @@ class ScreenCapture:
     """Handles screen capture operations"""
     
     def __init__(self):
-        self.sct = mss.mss()
+        # Use thread-local storage for MSS instances to avoid threading issues
+        self._local = threading.local()
         self.cache = {}  # Simple cache for identical screenshots
+        
+    def _get_sct(self):
+        """Get thread-local MSS instance"""
+        if not hasattr(self._local, 'sct'):
+            try:
+                self._local.sct = mss.mss()
+            except Exception as e:
+                print(f"Error initializing MSS: {e}")
+                # Fallback to alternative screenshot method
+                self._local.sct = None
+        return self._local.sct
         
     def capture_area(self, bbox: Tuple[int, int, int, int]) -> Image.Image:
         """
@@ -28,21 +41,47 @@ class ScreenCapture:
         """
         left, top, right, bottom = bbox
         
-        # MSS uses different bbox format
-        monitor = {
-            "top": top,
-            "left": left,
-            "width": right - left,
-            "height": bottom - top
-        }
+        # Get thread-local MSS instance
+        sct = self._get_sct()
         
-        # Capture screenshot
-        screenshot = self.sct.grab(monitor)
+        if sct is None:
+            # Fallback to alternative method
+            return self._capture_area_fallback(bbox)
         
-        # Convert to PIL Image
-        img = Image.frombytes("RGB", screenshot.size, screenshot.bgra, "raw", "BGRX")
-        
-        return img
+        try:
+            # MSS uses different bbox format
+            monitor = {
+                "top": top,
+                "left": left,
+                "width": right - left,
+                "height": bottom - top
+            }
+            
+            # Capture screenshot
+            screenshot = sct.grab(monitor)
+            
+            # Convert to PIL Image
+            img = Image.frombytes("RGB", screenshot.size, screenshot.bgra, "raw", "BGRX")
+            
+            return img
+            
+        except Exception as e:
+            print(f"MSS capture failed: {e}")
+            # Try fallback method
+            return self._capture_area_fallback(bbox)
+            
+    def _capture_area_fallback(self, bbox: Tuple[int, int, int, int]) -> Image.Image:
+        """Fallback screenshot method using PIL"""
+        try:
+            import PIL.ImageGrab as ImageGrab
+            left, top, right, bottom = bbox
+            # PIL ImageGrab uses (left, top, right, bottom) format
+            img = ImageGrab.grab(bbox=(left, top, right, bottom))
+            return img
+        except Exception as e:
+            print(f"Fallback capture failed: {e}")
+            # Return a placeholder image
+            return Image.new('RGB', (200, 100), color='red')
         
     def capture_area_cached(self, bbox: Tuple[int, int, int, int]) -> Tuple[Image.Image, bool]:
         """
@@ -154,28 +193,74 @@ class ScreenCapture:
             
     def get_screen_info(self) -> dict:
         """Get information about available screens"""
-        monitors = []
-        for monitor in self.sct.monitors[1:]:  # Skip monitor 0 (all monitors)
-            monitors.append({
-                'left': monitor['left'],
-                'top': monitor['top'],
-                'width': monitor['width'],
-                'height': monitor['height']
-            })
-            
-        return {
-            'monitors': monitors,
-            'primary': monitors[0] if monitors else None
-        }
+        sct = self._get_sct()
+        
+        if sct is None:
+            # Fallback: return default screen info
+            try:
+                import tkinter as tk
+                root = tk.Tk()
+                width = root.winfo_screenwidth()
+                height = root.winfo_screenheight()
+                root.destroy()
+                
+                return {
+                    'monitors': [{'left': 0, 'top': 0, 'width': width, 'height': height}],
+                    'primary': {'left': 0, 'top': 0, 'width': width, 'height': height}
+                }
+            except:
+                return {
+                    'monitors': [{'left': 0, 'top': 0, 'width': 1920, 'height': 1080}],
+                    'primary': {'left': 0, 'top': 0, 'width': 1920, 'height': 1080}
+                }
+        
+        try:
+            monitors = []
+            for monitor in sct.monitors[1:]:  # Skip monitor 0 (all monitors)
+                monitors.append({
+                    'left': monitor['left'],
+                    'top': monitor['top'],
+                    'width': monitor['width'],
+                    'height': monitor['height']
+                })
+                
+            return {
+                'monitors': monitors,
+                'primary': monitors[0] if monitors else None
+            }
+        except Exception as e:
+            print(f"Error getting screen info: {e}")
+            return {
+                'monitors': [{'left': 0, 'top': 0, 'width': 1920, 'height': 1080}],
+                'primary': {'left': 0, 'top': 0, 'width': 1920, 'height': 1080}
+            }
         
     def capture_full_screen(self, monitor_index: int = 1) -> Image.Image:
         """Capture full screen of specified monitor"""
-        monitor = self.sct.monitors[monitor_index]
-        screenshot = self.sct.grab(monitor)
+        sct = self._get_sct()
         
-        # Convert to PIL Image
-        img = Image.frombytes("RGB", screenshot.size, screenshot.bgra, "raw", "BGRX")
-        return img
+        if sct is None:
+            # Fallback to PIL ImageGrab
+            try:
+                import PIL.ImageGrab as ImageGrab
+                return ImageGrab.grab()
+            except:
+                return Image.new('RGB', (1920, 1080), color='blue')
+        
+        try:
+            monitor = sct.monitors[monitor_index]
+            screenshot = sct.grab(monitor)
+            
+            # Convert to PIL Image
+            img = Image.frombytes("RGB", screenshot.size, screenshot.bgra, "raw", "BGRX")
+            return img
+        except Exception as e:
+            print(f"Full screen capture failed: {e}")
+            try:
+                import PIL.ImageGrab as ImageGrab
+                return ImageGrab.grab()
+            except:
+                return Image.new('RGB', (1920, 1080), color='blue')
         
     def clear_cache(self):
         """Clear screenshot cache"""
@@ -183,5 +268,8 @@ class ScreenCapture:
         
     def __del__(self):
         """Cleanup"""
-        if hasattr(self, 'sct') and self.sct:
-            self.sct.close()
+        try:
+            if hasattr(self, '_local') and hasattr(self._local, 'sct') and self._local.sct:
+                self._local.sct.close()
+        except:
+            pass

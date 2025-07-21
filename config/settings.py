@@ -31,7 +31,7 @@ class Settings:
         }
         
         self.config['ui'] = {
-            'overlay_transparency': '0.05',
+            'overlay_transparency': '0.7',
             'overlay_border_color': '#FF0000',
             'overlay_border_width': '2',
             'always_on_top': 'true',

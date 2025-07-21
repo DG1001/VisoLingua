@@ -94,6 +94,11 @@ class VisoLinguaApp:
             
     def run(self):
         """Start the application"""
+        print(f"Starting {self.settings.get('ui', 'overlay_transparency')}% transparent overlay...")
+        print("Look for a red-bordered window that you can drag and resize.")
+        print("Click inside the red area to capture screenshots for translation.")
+        print("Double-click the title bar to switch between capture and result modes.")
+        
         # Setup global hotkeys
         self.root.bind('<Control-Tab>', lambda e: self.toggle_mode())
         

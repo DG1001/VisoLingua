@@ -21,9 +21,15 @@ class OverlayWindow:
         
         # Window configuration
         self.window.title("VisoLingua - Capture")
-        self.window.attributes('-alpha', self.settings.getfloat('ui', 'overlay_transparency', 0.05))
+        # Make window more visible (0.05 is too transparent)
+        transparency = self.settings.getfloat('ui', 'overlay_transparency', 0.05)
+        # Ensure minimum visibility
+        if transparency < 0.3:
+            transparency = 0.7  # 30% transparent, 70% visible
+        self.window.attributes('-alpha', transparency)
         self.window.attributes('-topmost', self.settings.getboolean('ui', 'always_on_top', True))
-        self.window.overrideredirect(True)  # Remove window decorations
+        # Don't remove decorations initially to make window visible
+        # self.window.overrideredirect(True)
         
         # Minimum size
         self.min_width = 200
