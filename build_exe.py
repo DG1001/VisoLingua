@@ -44,22 +44,42 @@ def build_executable():
     """Build the Windows executable"""
     print("🔨 Building VisoLingua.exe...")
     
+    # Check if icon exists
+    icon_path = "assets/icons/app.ico"
+    if not os.path.exists(icon_path):
+        print(f"   ⚠️  Icon not found: {icon_path}")
+        print("   Creating icon first...")
+        try:
+            subprocess.run([sys.executable, "create_icon.py"], check=True)
+        except:
+            print("   ❌ Failed to create icon, continuing without...")
+            icon_path = None
+    
     # PyInstaller command
     cmd = [
         'pyinstaller',
         '--onefile',                    # Single executable file
         '--windowed',                   # No console window
         '--name=VisoLingua',            # Output name
-        '--icon=assets/icons/app.ico',  # App icon
-        '--add-data=config;config',     # Include config directory
+        '--add-data=config;config',     # Include config directory  
         '--add-data=assets;assets',     # Include assets directory
         '--hidden-import=PIL._tkinter_finder',  # Fix tkinter issues
+        '--hidden-import=PIL.ImageTk',  # Fix PIL issues
         '--hidden-import=mss',          # Ensure mss is included
         '--hidden-import=aiohttp',      # Ensure aiohttp is included
         '--hidden-import=pyperclip',    # Ensure pyperclip is included
+        '--hidden-import=tkinter',      # Ensure tkinter is included
+        '--collect-all=PIL',            # Include all PIL modules
         '--noconfirm',                  # Don't ask for confirmation
         'main.py'                       # Entry point
     ]
+    
+    # Add icon if available
+    if icon_path and os.path.exists(icon_path):
+        cmd.insert(4, f'--icon={icon_path}')  # Add after --name
+        print(f"   Using icon: {icon_path}")
+    else:
+        print("   Building without icon")
     
     print(f"   Command: {' '.join(cmd)}")
     
