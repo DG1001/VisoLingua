@@ -51,7 +51,11 @@ if %errorlevel% equ 0 (
     echo Your VisoLingua.exe is ready in the 'dist' folder.
     echo You can now distribute this single file to any Windows computer.
     echo.
-    echo To test: cd dist && VisoLingua.exe
+    echo To test: 
+    echo   cd dist
+    echo   VisoLingua.exe
+    echo.
+    echo Or use: dist\VisoLingua.exe
     echo.
 ) else (
     echo.

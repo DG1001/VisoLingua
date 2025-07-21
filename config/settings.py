@@ -4,6 +4,7 @@ Configuration management for VisoLingua
 
 import configparser
 import os
+import sys
 from typing import Dict, Any
 
 
@@ -11,7 +12,15 @@ class Settings:
     """Manages application settings and configuration"""
     
     def __init__(self):
-        self.config_file = os.path.join(os.path.dirname(__file__), 'config.ini')
+        # For PyInstaller compatibility - config.ini next to EXE
+        if getattr(sys, 'frozen', False):
+            # Running as PyInstaller executable
+            exe_dir = os.path.dirname(sys.executable)
+            self.config_file = os.path.join(exe_dir, 'config.ini')
+        else:
+            # Running as Python script
+            self.config_file = os.path.join(os.path.dirname(__file__), 'config.ini')
+            
         self.config = configparser.ConfigParser()
         self._load_config()
         
