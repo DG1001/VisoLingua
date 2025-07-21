@@ -10,10 +10,11 @@ from utils.helpers import get_safe_cursor
 class OverlayWindow:
     """Transparent overlay window for capturing screenshots"""
     
-    def __init__(self, parent, settings, on_screenshot_callback):
+    def __init__(self, parent, settings, on_screenshot_callback, toggle_callback=None):
         self.parent = parent
         self.settings = settings
         self.on_screenshot = on_screenshot_callback
+        self.toggle_callback = toggle_callback
         
         # Create overlay window
         self.window = tk.Toplevel(parent)
@@ -169,9 +170,9 @@ class OverlayWindow:
         
     def _on_title_double_click(self, event):
         """Handle double-click on title bar"""
-        # This will be handled by the main app to toggle modes
-        if hasattr(self.parent.master, 'toggle_mode'):
-            self.parent.master.toggle_mode()
+        # Switch to result mode if available
+        if self.toggle_callback:
+            self.toggle_callback()
             
     def _on_drag_start(self, event):
         """Start dragging window"""
@@ -222,17 +223,35 @@ class OverlayWindow:
         
     def show(self):
         """Show overlay window"""
+        print("Showing overlay window...")
+        
         self.window.deiconify()
         self.window.lift()
-        self.window.geometry(f"{self.width}x{self.height}+{self.x}+{self.y}")
+        self.window.attributes('-topmost', True)
+        
+        # Only set geometry if we have valid stored values
+        if hasattr(self, 'x') and hasattr(self, 'y'):
+            geometry = f"{self.width}x{self.height}+{self.x}+{self.y}"
+            print(f"Restoring overlay geometry: {geometry}")
+            self.window.geometry(geometry)
+        else:
+            # Default position if no stored values
+            geometry = f"{self.width}x{self.height}+100+100"
+            print(f"Using default overlay geometry: {geometry}")
+            self.window.geometry(geometry)
         
     def hide(self):
         """Hide overlay window"""
-        # Save current position
-        self.x = self.window.winfo_x()
-        self.y = self.window.winfo_y()
-        self.width = self.window.winfo_width()
-        self.height = self.window.winfo_height()
+        # Save current position and size before hiding
+        try:
+            if self.window.winfo_viewable():
+                self.x = self.window.winfo_x()
+                self.y = self.window.winfo_y()
+                self.width = self.window.winfo_width()
+                self.height = self.window.winfo_height()
+                print(f"Saving overlay geometry: {self.width}x{self.height}+{self.x}+{self.y}")
+        except tk.TclError:
+            pass  # Window might not be available
         
         self.window.withdraw()
         

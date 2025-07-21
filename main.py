@@ -28,8 +28,8 @@ class VisoLinguaApp:
         self.translator = Translator(self.settings)
         
         # Initialize windows
-        self.overlay = OverlayWindow(self.root, self.settings, self.on_screenshot)
-        self.result_window = ResultWindow(self.root, self.settings)
+        self.overlay = OverlayWindow(self.root, self.settings, self.on_screenshot, self.switch_to_result)
+        self.result_window = ResultWindow(self.root, self.settings, self.switch_to_capture)
         
         # Current mode: 'capture' or 'result'
         self.current_mode = 'capture'
@@ -75,12 +75,14 @@ class VisoLinguaApp:
             
     def switch_to_capture(self):
         """Switch to capture mode"""
+        print("Switching to capture mode...")
         self.current_mode = 'capture'
         self.result_window.hide()
         self.overlay.show()
         
     def switch_to_result(self):
         """Switch to result mode"""
+        print("Switching to result mode...")
         self.current_mode = 'result'
         self.overlay.hide()
         self.result_window.show()

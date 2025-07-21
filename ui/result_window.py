@@ -11,9 +11,10 @@ from typing import List, Dict
 class ResultWindow:
     """Window for displaying translation results"""
     
-    def __init__(self, parent, settings):
+    def __init__(self, parent, settings, toggle_callback=None):
         self.parent = parent
         self.settings = settings
+        self.toggle_callback = toggle_callback
         
         # Create result window
         self.window = tk.Toplevel(parent)
@@ -31,6 +32,9 @@ class ResultWindow:
         # Setup UI
         self._setup_ui()
         self._setup_bindings()
+        
+        # Handle window close event
+        self.window.protocol("WM_DELETE_WINDOW", self._on_window_close)
         
     def _setup_ui(self):
         """Setup the result window UI"""
@@ -77,6 +81,14 @@ class ResultWindow:
             command=self._clear_result
         )
         self.clear_button.pack(side=tk.LEFT, padx=(0, 5))
+        
+        # Back to capture button
+        self.back_button = ttk.Button(
+            button_frame,
+            text="Back to Capture",
+            command=self._back_to_capture
+        )
+        self.back_button.pack(side=tk.LEFT, padx=(0, 5))
         
         # Settings button
         self.settings_button = ttk.Button(
@@ -286,6 +298,15 @@ class ResultWindow:
             
         ttk.Button(button_frame, text="Save", command=save_settings).pack(side=tk.LEFT, padx=5)
         ttk.Button(button_frame, text="Cancel", command=settings_window.destroy).pack(side=tk.LEFT, padx=5)
+        
+    def _back_to_capture(self):
+        """Switch back to capture mode"""
+        if self.toggle_callback:
+            self.toggle_callback()
+            
+    def _on_window_close(self):
+        """Handle window close event - switch back to capture"""
+        self._back_to_capture()
         
     def show(self):
         """Show result window"""
