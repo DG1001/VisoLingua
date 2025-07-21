@@ -75,7 +75,7 @@ echo set "DESKTOP_SHORTCUT=%%USERPROFILE%%\Desktop\VisoLingua.lnk"
 echo.
 echo echo Creating desktop shortcut...
 echo.
-echo powershell -Command "$WshShell = New-Object -comObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut('%%DESKTOP_SHORTCUT%%'^); $Shortcut.TargetPath = '%%CURRENT_DIR%%\VisoLingua.exe'; $Shortcut.WorkingDirectory = '%%CURRENT_DIR%%'; $Shortcut.Description = 'VisoLingua - Live Translation Overlay Tool'; $Shortcut.Save(^)"
+echo powershell -Command "& {$WshShell = New-Object -comObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut('%%DESKTOP_SHORTCUT%%'); $Shortcut.TargetPath = '%%CURRENT_DIR%%\VisoLingua.exe'; $Shortcut.WorkingDirectory = '%%CURRENT_DIR%%'; $Shortcut.Description = 'VisoLingua - Live Translation Overlay Tool'; $Shortcut.Save()}"
 echo.
 echo if %%errorlevel%% equ 0 ^(
 echo     echo ✅ Desktop shortcut created!

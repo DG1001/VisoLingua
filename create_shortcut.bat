@@ -17,7 +17,7 @@ set "CURRENT_DIR=%CD%"
 set "DESKTOP_SHORTCUT=%USERPROFILE%\Desktop\VisoLingua.lnk"
 
 REM Create desktop shortcut using PowerShell
-powershell -Command "$WshShell = New-Object -comObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut('%DESKTOP_SHORTCUT%'); $Shortcut.TargetPath = '%CURRENT_DIR%\VisoLingua.exe'; $Shortcut.WorkingDirectory = '%CURRENT_DIR%'; $Shortcut.Description = 'VisoLingua - Live Translation Overlay Tool'; $Shortcut.Save()"
+powershell -Command "& {$WshShell = New-Object -comObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut('%DESKTOP_SHORTCUT%'); $Shortcut.TargetPath = '%CURRENT_DIR%\VisoLingua.exe'; $Shortcut.WorkingDirectory = '%CURRENT_DIR%'; $Shortcut.Description = 'VisoLingua - Live Translation Overlay Tool'; $Shortcut.Save()}"
 
 if %errorlevel% equ 0 (
     echo ✅ Desktop shortcut created successfully!
