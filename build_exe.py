@@ -74,8 +74,6 @@ def build_executable():
         '--noupx',                      # Disable UPX compression (reduces false positives)
         '--strip',                      # Strip debug symbols
         '--clean',                      # Clean cache before building
-        '--exclude-module=tcl',         # Exclude unnecessary modules
-        '--exclude-module=_tkinter',    # Exclude if not needed
         '--exclude-module=matplotlib',  # Exclude heavy modules
         '--exclude-module=numpy',       # Exclude if not used
         '--exclude-module=scipy',       # Exclude if not used
