@@ -10,11 +10,12 @@ from utils.helpers import get_safe_cursor
 class OverlayWindow:
     """Transparent overlay window for capturing screenshots"""
     
-    def __init__(self, parent, settings, on_screenshot_callback, toggle_callback=None):
+    def __init__(self, parent, settings, on_screenshot_callback, toggle_callback=None, quit_callback=None):
         self.parent = parent
         self.settings = settings
         self.on_screenshot = on_screenshot_callback
         self.toggle_callback = toggle_callback
+        self.quit_callback = quit_callback
         
         # Create overlay window
         self.window = tk.Toplevel(parent)
@@ -46,6 +47,9 @@ class OverlayWindow:
         # Configure window
         self._setup_window()
         self._setup_bindings()
+        
+        # Handle window close event - should quit the entire app
+        self.window.protocol("WM_DELETE_WINDOW", self._on_window_close)
         
         # Drag and resize state
         self.dragging = False
@@ -303,6 +307,15 @@ class OverlayWindow:
         
         self.window.withdraw()
         
+    def _on_window_close(self):
+        """Handle overlay window close - quit entire application"""
+        print("Overlay window closed - quitting application")
+        if self.quit_callback:
+            self.quit_callback()
+        else:
+            # Fallback: quit the main application
+            self.parent.quit()
+            
     def destroy(self):
         """Destroy overlay window"""
         if self.window:

@@ -11,10 +11,11 @@ from typing import List, Dict
 class ResultWindow:
     """Window for displaying translation results"""
     
-    def __init__(self, parent, settings, toggle_callback=None):
+    def __init__(self, parent, settings, toggle_callback=None, quit_callback=None):
         self.parent = parent
         self.settings = settings
         self.toggle_callback = toggle_callback
+        self.quit_callback = quit_callback
         
         # Create result window
         self.window = tk.Toplevel(parent)
@@ -90,13 +91,21 @@ class ResultWindow:
         )
         self.back_button.pack(side=tk.LEFT, padx=(0, 5))
         
+        # Quit button
+        self.quit_button = ttk.Button(
+            button_frame,
+            text="Quit",
+            command=self._quit_app
+        )
+        self.quit_button.pack(side=tk.RIGHT, padx=(5, 0))
+        
         # Settings button
         self.settings_button = ttk.Button(
             button_frame,
             text="Settings",
             command=self._open_settings
         )
-        self.settings_button.pack(side=tk.RIGHT)
+        self.settings_button.pack(side=tk.RIGHT, padx=(0, 5))
         
         # History dropdown
         history_frame = ttk.Frame(main_frame)
@@ -303,6 +312,14 @@ class ResultWindow:
         """Switch back to capture mode"""
         if self.toggle_callback:
             self.toggle_callback()
+            
+    def _quit_app(self):
+        """Quit the entire application"""
+        if self.quit_callback:
+            self.quit_callback()
+        else:
+            # Fallback
+            self.parent.quit()
             
     def _on_window_close(self):
         """Handle window close event - switch back to capture"""

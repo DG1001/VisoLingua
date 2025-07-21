@@ -28,8 +28,8 @@ class VisoLinguaApp:
         self.translator = Translator(self.settings)
         
         # Initialize windows
-        self.overlay = OverlayWindow(self.root, self.settings, self.on_screenshot, self.switch_to_result)
-        self.result_window = ResultWindow(self.root, self.settings, self.switch_to_capture)
+        self.overlay = OverlayWindow(self.root, self.settings, self.on_screenshot, self.switch_to_result, self.quit)
+        self.result_window = ResultWindow(self.root, self.settings, self.switch_to_capture, self.quit)
         
         # Current mode: 'capture' or 'result'
         self.current_mode = 'capture'
@@ -115,8 +115,26 @@ class VisoLinguaApp:
             
     def quit(self):
         """Clean shutdown"""
-        self.loop.call_soon_threadsafe(self.loop.stop)
-        self.root.quit()
+        print("Shutting down VisoLingua...")
+        try:
+            # Stop async loop
+            if hasattr(self, 'loop') and self.loop.is_running():
+                self.loop.call_soon_threadsafe(self.loop.stop)
+                
+            # Close windows
+            if hasattr(self, 'result_window'):
+                self.result_window.destroy()
+            if hasattr(self, 'overlay'):
+                self.overlay.destroy()
+                
+            # Quit main application
+            self.root.quit()
+            
+        except Exception as e:
+            print(f"Error during shutdown: {e}")
+            # Force quit
+            import sys
+            sys.exit(0)
 
 
 def main():
