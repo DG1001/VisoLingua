@@ -41,8 +41,9 @@ def check_dependencies():
         return False
 
 def build_executable():
-    """Build the Windows executable"""
-    print("🔨 Building VisoLingua.exe...")
+    """Build the Windows executable with anti-virus friendly settings"""
+    print("🔨 Building VisoLingua.exe (Anti-Virus Optimized)...")
+    print("   ℹ️  Using --noupx and exclusions to reduce false positives")
     
     # Check if icon exists
     icon_path = "assets/icons/app.ico"
@@ -55,7 +56,7 @@ def build_executable():
             print("   ❌ Failed to create icon, continuing without...")
             icon_path = None
     
-    # PyInstaller command
+    # PyInstaller command with anti-virus friendly options
     cmd = [
         'pyinstaller',
         '--onefile',                    # Single executable file
@@ -70,6 +71,19 @@ def build_executable():
         '--hidden-import=pyperclip',    # Ensure pyperclip is included
         '--hidden-import=tkinter',      # Ensure tkinter is included
         '--collect-all=PIL',            # Include all PIL modules
+        '--noupx',                      # Disable UPX compression (reduces false positives)
+        '--strip',                      # Strip debug symbols
+        '--clean',                      # Clean cache before building
+        '--exclude-module=tcl',         # Exclude unnecessary modules
+        '--exclude-module=_tkinter',    # Exclude if not needed
+        '--exclude-module=matplotlib',  # Exclude heavy modules
+        '--exclude-module=numpy',       # Exclude if not used
+        '--exclude-module=scipy',       # Exclude if not used
+        '--exclude-module=pandas',      # Exclude if not used
+        '--distpath=dist',              # Explicit dist path
+        '--workpath=build',             # Explicit work path
+        '--specpath=.',                 # Spec file location
+        '--log-level=INFO',             # Detailed logging
         '--noconfirm',                  # Don't ask for confirmation
         'main.py'                       # Entry point
     ]
@@ -215,8 +229,16 @@ def main():
     print()
     print("💡 Next steps:")
     print("   • Test the executable on different Windows machines")
+    print("   • If still flagged, consider code signing with a certificate")
+    print("   • Submit false positive reports to antivirus vendors")
     print("   • Create shortcuts for desktop/start menu")
     print("   • Consider creating an installer for easier distribution")
+    print()
+    print("🛡️  Anti-Virus Tips:")
+    print("   • Built with --noupx to avoid compression false positives")
+    print("   • Excluded unused modules to reduce suspicion")
+    print("   • If still detected, try running build multiple times")
+    print("   • Consider submitting to VirusTotal for vendor review")
 
 if __name__ == '__main__':
     main()
