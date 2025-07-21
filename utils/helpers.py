@@ -325,6 +325,33 @@ def get_system_fonts() -> List[str]:
         return get_font_family()
 
 
+def get_safe_cursor(preferred_cursor: str, fallback: str = 'arrow') -> str:
+    """Get a safe cursor name that works on the current system"""
+    try:
+        # Create a temporary root window to test cursor
+        root = tk.Tk()
+        root.withdraw()
+        
+        # Test preferred cursor
+        try:
+            test_label = tk.Label(root, cursor=preferred_cursor)
+            test_label.destroy()
+            root.destroy()
+            return preferred_cursor
+        except tk.TclError:
+            # Try fallback
+            try:
+                test_label = tk.Label(root, cursor=fallback)
+                test_label.destroy()
+                root.destroy()
+                return fallback
+            except tk.TclError:
+                root.destroy()
+                return 'arrow'  # Most basic cursor
+    except Exception:
+        return 'arrow'
+
+
 def validate_config_value(value: Any, expected_type: type, default: Any = None) -> Any:
     """Validate and convert config value"""
     if value is None:

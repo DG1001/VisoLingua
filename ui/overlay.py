@@ -4,6 +4,7 @@ Transparent overlay window for screenshot capture
 
 import tkinter as tk
 from tkinter import ttk
+from utils.helpers import get_safe_cursor
 
 
 class OverlayWindow:
@@ -79,13 +80,15 @@ class OverlayWindow:
         self.title_bar.pack(side=tk.TOP, fill=tk.X)
         
         # Resize handle
+        resize_cursor = get_safe_cursor('sizing', 'hand2')
+        
         self.resize_handle = tk.Label(
             self.main_frame,
             text="◢",
             bg=border_color,
             fg='white',
             font=('Arial', 12),
-            cursor='se-resize'
+            cursor=resize_cursor
         )
         self.resize_handle.place(relx=1.0, rely=1.0, anchor='se')
         

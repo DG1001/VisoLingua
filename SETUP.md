@@ -74,7 +74,11 @@ python main.py
 **"No display found" error:**
 - Ensure you're running on a system with GUI support
 - On Linux: Install X11 server or use desktop environment
-- On WSL: Install VcXsrv or similar X11 server
+- On WSL: Install VcXsrv or similar X11 server, set DISPLAY variable
+
+**"Bad cursor spec" error:**
+- This has been fixed with automatic cursor fallback
+- App will automatically use compatible cursors for your system
 
 **"API key not configured" error:**
 - Open Settings and enter valid API keys
