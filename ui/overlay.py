@@ -22,6 +22,10 @@ class OverlayWindow:
         
         # Window configuration
         self.window.title("VisoLingua - Capture")
+        
+        # Windows DPI awareness
+        self._setup_dpi_awareness()
+        
         # Make window more visible (0.05 is too transparent)
         transparency = self.settings.getfloat('ui', 'overlay_transparency', 0.05)
         # Ensure minimum visibility
@@ -36,11 +40,8 @@ class OverlayWindow:
         self.min_width = 200
         self.min_height = 200
         
-        # Initial size and position
-        self.width = 400
-        self.height = 300
-        self.x = 100
-        self.y = 100
+        # Initial size and position - use actual screen coordinates
+        self._calculate_initial_geometry()
         
         # Configure window
         self._setup_window()
@@ -51,6 +52,43 @@ class OverlayWindow:
         self.resizing = False
         self.drag_start_x = 0
         self.drag_start_y = 0
+        
+    def _setup_dpi_awareness(self):
+        """Setup DPI awareness for Windows"""
+        try:
+            import platform
+            if platform.system() == 'Windows':
+                # Try to set DPI awareness
+                try:
+                    import ctypes
+                    ctypes.windll.shcore.SetProcessDpiAwareness(1)  # PROCESS_SYSTEM_DPI_AWARE
+                except:
+                    try:
+                        ctypes.windll.user32.SetProcessDPIAware()
+                    except:
+                        pass  # DPI awareness not available
+        except:
+            pass  # Not on Windows or DPI functions not available
+            
+    def _calculate_initial_geometry(self):
+        """Calculate proper initial geometry accounting for DPI"""
+        # Let tkinter initialize first
+        self.window.update_idletasks()
+        
+        # Get screen dimensions
+        screen_width = self.window.winfo_screenwidth()
+        screen_height = self.window.winfo_screenheight()
+        
+        # Calculate initial size (accounting for DPI scaling)
+        self.width = min(400, screen_width // 4)
+        self.height = min(300, screen_height // 4)
+        
+        # Calculate centered position
+        self.x = (screen_width - self.width) // 4  # Not fully centered, but visible
+        self.y = (screen_height - self.height) // 4
+        
+        print(f"Calculated initial geometry: {self.width}x{self.height}+{self.x}+{self.y}")
+        print(f"Screen size: {screen_width}x{screen_height}")
         
     def _setup_window(self):
         """Setup window appearance and layout"""
@@ -229,16 +267,26 @@ class OverlayWindow:
         self.window.lift()
         self.window.attributes('-topmost', True)
         
-        # Only set geometry if we have valid stored values
-        if hasattr(self, 'x') and hasattr(self, 'y'):
-            geometry = f"{self.width}x{self.height}+{self.x}+{self.y}"
-            print(f"Restoring overlay geometry: {geometry}")
-            self.window.geometry(geometry)
-        else:
-            # Default position if no stored values
-            geometry = f"{self.width}x{self.height}+100+100"
-            print(f"Using default overlay geometry: {geometry}")
-            self.window.geometry(geometry)
+        # Set geometry - always use calculated values
+        geometry = f"{self.width}x{self.height}+{self.x}+{self.y}"
+        print(f"Setting overlay geometry: {geometry}")
+        self.window.geometry(geometry)
+        
+        # Force update to ensure proper sizing
+        self.window.update_idletasks()
+        
+        # Verify actual size after showing
+        actual_width = self.window.winfo_width()
+        actual_height = self.window.winfo_height()
+        actual_x = self.window.winfo_x()
+        actual_y = self.window.winfo_y()
+        print(f"Actual geometry after show: {actual_width}x{actual_height}+{actual_x}+{actual_y}")
+        
+        # Update stored values with actual values
+        self.width = actual_width
+        self.height = actual_height
+        self.x = actual_x
+        self.y = actual_y
         
     def hide(self):
         """Hide overlay window"""

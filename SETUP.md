@@ -76,6 +76,12 @@ python main.py
 - Window should now be clearly visible with red border
 - You can adjust transparency in config.ini if needed
 
+**Window size changes after first click (Windows DPI scaling):**
+- ✅ FIXED: Added Windows DPI awareness
+- ✅ FIXED: Dynamic geometry calculation based on actual screen size
+- ✅ FIXED: Real-time geometry verification and correction
+- Window should maintain consistent size from first start
+
 **"_thread._local object has no attribute 'srcdc'" error:**
 - ✅ FIXED: MSS threading issues resolved
 - Added thread-local storage for MSS instances

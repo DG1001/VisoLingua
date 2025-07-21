@@ -405,3 +405,28 @@ def memory_usage() -> Dict[str, Any]:
         return {'error': 'psutil not available'}
     except Exception as e:
         return {'error': str(e)}
+
+
+def get_system_info() -> Dict[str, Any]:
+    """Get system information for debugging"""
+    info = {
+        'platform': platform.system(),
+        'platform_version': platform.version(),
+        'python_version': sys.version,
+        'architecture': platform.architecture()[0]
+    }
+    
+    # Add DPI information for Windows
+    if platform.system() == 'Windows':
+        try:
+            import ctypes
+            # Get DPI scaling
+            dpi = ctypes.windll.user32.GetDpiForSystem()
+            scaling = dpi / 96.0  # 96 DPI = 100% scaling
+            info['dpi'] = dpi
+            info['dpi_scaling'] = f"{scaling:.1f}x ({int(scaling * 100)}%)"
+        except:
+            info['dpi'] = 'unknown'
+            info['dpi_scaling'] = 'unknown'
+    
+    return info
