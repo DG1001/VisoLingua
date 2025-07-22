@@ -349,86 +349,37 @@ class ResultWindow(BaseWindow):
         
         # Refresh models button
         def refresh_models():
-            # Show loading message
-            refresh_btn.config(text="Loading...", state="disabled")
-            
-            def fetch_models_thread():
-                try:
-                    import asyncio
-                    import aiohttp
+            try:
+                import asyncio
+                from core.translator import Translator
+                
+                translator = Translator(self.settings)
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                result = loop.run_until_complete(translator.test_ollama_connection())
+                loop.close()
+                
+                if result['success']:
+                    models = result.get('available_models', [])
+                    model_combo['values'] = models
+                    if models:
+                        # Set current model if available
+                        current_model = self.settings.get('ollama', 'model', 'llava:7b')
+                        if current_model in models:
+                            available_models_var.set(current_model)
+                        else:
+                            available_models_var.set(models[0])
+                    tk.messagebox.showinfo("Models", f"Found {len(models)} models:\n" + "\n".join(models[:10]) + ("\n..." if len(models) > 10 else ""))
+                else:
+                    tk.messagebox.showerror("Error", f"Failed to get models:\n{result['error']}")
+                    # Fallback to manual input
+                    available_models_var.set(self.settings.get('ollama', 'model', 'llava:7b'))
                     
-                    # Simple direct HTTP request instead of using translator
-                    base_url = self.settings.get('ollama', 'base_url', 'http://localhost:11434')
-                    
-                    async def get_models():
-                        timeout = aiohttp.ClientTimeout(total=5)
-                        async with aiohttp.ClientSession(timeout=timeout) as session:
-                            async with session.get(f"{base_url}/api/tags") as response:
-                                if response.status == 200:
-                                    result = await response.json()
-                                    return result.get('models', [])
-                                else:
-                                    raise Exception(f"HTTP {response.status}")
-                    
-                    # Run async function
-                    try:
-                        loop = asyncio.new_event_loop()
-                        asyncio.set_event_loop(loop)
-                        models_data = loop.run_until_complete(get_models())
-                        loop.close()
-                        
-                        # Extract model names
-                        model_names = [m['name'] for m in models_data if 'name' in m]
-                        
-                        # Update UI in main thread
-                        def update_ui():
-                            refresh_btn.config(text="Refresh Models", state="normal")
-                            if model_names:
-                                model_combo['values'] = model_names
-                                # Set current model if available
-                                current_model = self.settings.get('ollama', 'model', 'llava:7b')
-                                if current_model in model_names:
-                                    available_models_var.set(current_model)
-                                else:
-                                    available_models_var.set(model_names[0])
-                                tk.messagebox.showinfo("Models Found", 
-                                    f"Found {len(model_names)} models:\n" + 
-                                    "\n".join(model_names[:10]) + 
-                                    ("\n..." if len(model_names) > 10 else ""))
-                            else:
-                                tk.messagebox.showwarning("No Models", "No models found. Make sure Ollama is running and has models installed.")
-                                available_models_var.set(self.settings.get('ollama', 'model', 'llava:7b'))
-                        
-                        settings_window.after(0, update_ui)
-                        
-                    except Exception as e:
-                        error_msg = str(e)
-                        def show_error():
-                            refresh_btn.config(text="Refresh Models", state="normal")
-                            if "Connection" in error_msg or "timeout" in error_msg.lower():
-                                display_msg = "Connection failed. Is Ollama running?\n\nStart Ollama with: ollama serve"
-                            else:
-                                display_msg = f"Failed to connect to Ollama:\n{error_msg}"
-                            tk.messagebox.showerror("Connection Error", display_msg)
-                            available_models_var.set(self.settings.get('ollama', 'model', 'llava:7b'))
-                        
-                        settings_window.after(0, show_error)
-                        
-                except Exception as e:
-                    error_msg = str(e)
-                    def show_error():
-                        refresh_btn.config(text="Refresh Models", state="normal")
-                        tk.messagebox.showerror("Error", f"Error refreshing models:\n{error_msg}")
-                        available_models_var.set(self.settings.get('ollama', 'model', 'llava:7b'))
-                    
-                    settings_window.after(0, show_error)
-            
-            # Run in background thread
-            import threading
-            threading.Thread(target=fetch_models_thread, daemon=True).start()
+            except Exception as e:
+                tk.messagebox.showerror("Error", f"Error refreshing models:\n{str(e)}")
+                available_models_var.set(self.settings.get('ollama', 'model', 'llava:7b'))
         
-        refresh_btn = ttk.Button(model_frame, text="Refresh Models", command=refresh_models)
-        refresh_btn.pack(side=tk.LEFT)
+        ttk.Button(model_frame, text="Refresh Models", command=refresh_models).pack(side=tk.LEFT)
         
         # Set initial model value
         available_models_var.set(self.settings.get('ollama', 'model', 'llava:7b'))
@@ -456,69 +407,27 @@ class ResultWindow(BaseWindow):
         
         # Test Ollama connection button
         def test_ollama():
-            test_btn.config(text="Testing...", state="disabled")
+            import asyncio
+            from core.translator import Translator
             
-            def test_thread():
-                try:
-                    import asyncio
-                    import aiohttp
-                    
-                    base_url = self.settings.get('ollama', 'base_url', 'http://localhost:11434')
-                    
-                    async def test_connection():
-                        timeout = aiohttp.ClientTimeout(total=5)
-                        async with aiohttp.ClientSession(timeout=timeout) as session:
-                            async with session.get(f"{base_url}/api/tags") as response:
-                                if response.status == 200:
-                                    result = await response.json()
-                                    return True, result.get('models', [])
-                                else:
-                                    return False, f"HTTP {response.status}"
-                    
-                    try:
-                        loop = asyncio.new_event_loop()
-                        asyncio.set_event_loop(loop)
-                        success, data = loop.run_until_complete(test_connection())
-                        loop.close()
-                        
-                        def show_result():
-                            test_btn.config(text="Test Ollama Connection", state="normal")
-                            if success:
-                                model_count = len(data) if isinstance(data, list) else 0
-                                tk.messagebox.showinfo("Connection Test", 
-                                    f"Connection successful!\n"
-                                    f"Server: {base_url}\n"
-                                    f"Available models: {model_count}")
-                            else:
-                                tk.messagebox.showerror("Connection Test", f"Connection failed:\n{data}")
-                        
-                        settings_window.after(0, show_result)
-                        
-                    except Exception as e:
-                        error_msg = str(e)
-                        def show_error():
-                            test_btn.config(text="Test Ollama Connection", state="normal")
-                            if "Connection" in error_msg or "timeout" in error_msg.lower():
-                                display_msg = "Connection failed. Is Ollama running?\n\nStart Ollama with: ollama serve"
-                            else:
-                                display_msg = f"Test failed:\n{error_msg}"
-                            tk.messagebox.showerror("Connection Test", display_msg)
-                        
-                        settings_window.after(0, show_error)
-                        
-                except Exception as e:
-                    error_msg = str(e)
-                    def show_error():
-                        test_btn.config(text="Test Ollama Connection", state="normal")
-                        tk.messagebox.showerror("Connection Test", f"Unexpected error:\n{error_msg}")
-                    
-                    settings_window.after(0, show_error)
-            
-            import threading
-            threading.Thread(target=test_thread, daemon=True).start()
+            translator = Translator(self.settings)
+            try:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                result = loop.run_until_complete(translator.test_ollama_connection())
+                loop.close()
+                
+                if result['success']:
+                    tk.messagebox.showinfo("Ollama Test", 
+                        f"Connection successful!\n"
+                        f"Server: {result.get('server_url')}\n"
+                        f"Available models: {len(result.get('available_models', []))}")
+                else:
+                    tk.messagebox.showerror("Ollama Test", f"Connection failed:\n{result['error']}")
+            except Exception as e:
+                tk.messagebox.showerror("Ollama Test", f"Test failed: {str(e)}")
         
-        test_btn = ttk.Button(ollama_frame, text="Test Ollama Connection", command=test_ollama)
-        test_btn.pack(pady=10)
+        ttk.Button(ollama_frame, text="Test Ollama Connection", command=test_ollama).pack(pady=10)
         
         # === UI Settings Tab ===
         ui_frame = ttk.Frame(notebook)
