@@ -64,13 +64,10 @@ def build_executable():
         '--name=VisoLingua',            # Output name
         '--add-data=config;config',     # Include config directory  
         '--add-data=assets;assets',     # Include assets directory
-        '--hidden-import=PIL._tkinter_finder',  # Fix tkinter issues
         '--hidden-import=PIL.ImageTk',  # Fix PIL issues
         '--hidden-import=mss',          # Ensure mss is included
-        '--hidden-import=aiohttp',      # Ensure aiohttp is included
         '--hidden-import=pyperclip',    # Ensure pyperclip is included
         '--hidden-import=tkinter',      # Ensure tkinter is included
-        '--collect-all=PIL',            # Include all PIL modules
         '--noupx',                      # Disable UPX compression (reduces false positives)
         '--strip',                      # Strip debug symbols
         '--clean',                      # Clean cache before building
@@ -78,6 +75,13 @@ def build_executable():
         '--exclude-module=numpy',       # Exclude if not used
         '--exclude-module=scipy',       # Exclude if not used
         '--exclude-module=pandas',      # Exclude if not used
+        '--exclude-module=tensorflow',  # Exclude AI frameworks
+        '--exclude-module=torch',       # Exclude PyTorch
+        '--exclude-module=sklearn',     # Exclude scikit-learn
+        '--exclude-module=jupyter',     # Exclude Jupyter
+        '--exclude-module=IPython',     # Exclude IPython
+        '--exclude-module=pytest',      # Exclude testing frameworks
+        '--exclude-module=unittest',    # Exclude unittest
         '--distpath=dist',              # Explicit dist path
         '--workpath=build',             # Explicit work path
         '--specpath=.',                 # Spec file location
