@@ -402,20 +402,23 @@ class ResultWindow(BaseWindow):
                         settings_window.after(0, update_ui)
                         
                     except Exception as e:
+                        error_msg = str(e)
                         def show_error():
                             refresh_btn.config(text="Refresh Models", state="normal")
-                            error_msg = str(e)
                             if "Connection" in error_msg or "timeout" in error_msg.lower():
-                                error_msg = "Connection failed. Is Ollama running?\n\nStart Ollama with: ollama serve"
-                            tk.messagebox.showerror("Connection Error", f"Failed to connect to Ollama:\n{error_msg}")
+                                display_msg = "Connection failed. Is Ollama running?\n\nStart Ollama with: ollama serve"
+                            else:
+                                display_msg = f"Failed to connect to Ollama:\n{error_msg}"
+                            tk.messagebox.showerror("Connection Error", display_msg)
                             available_models_var.set(self.settings.get('ollama', 'model', 'llava:7b'))
                         
                         settings_window.after(0, show_error)
                         
                 except Exception as e:
+                    error_msg = str(e)
                     def show_error():
                         refresh_btn.config(text="Refresh Models", state="normal")
-                        tk.messagebox.showerror("Error", f"Error refreshing models:\n{str(e)}")
+                        tk.messagebox.showerror("Error", f"Error refreshing models:\n{error_msg}")
                         available_models_var.set(self.settings.get('ollama', 'model', 'llava:7b'))
                     
                     settings_window.after(0, show_error)
@@ -492,19 +495,22 @@ class ResultWindow(BaseWindow):
                         settings_window.after(0, show_result)
                         
                     except Exception as e:
+                        error_msg = str(e)
                         def show_error():
                             test_btn.config(text="Test Ollama Connection", state="normal")
-                            error_msg = str(e)
                             if "Connection" in error_msg or "timeout" in error_msg.lower():
-                                error_msg = "Connection failed. Is Ollama running?\n\nStart Ollama with: ollama serve"
-                            tk.messagebox.showerror("Connection Test", f"Test failed:\n{error_msg}")
+                                display_msg = "Connection failed. Is Ollama running?\n\nStart Ollama with: ollama serve"
+                            else:
+                                display_msg = f"Test failed:\n{error_msg}"
+                            tk.messagebox.showerror("Connection Test", display_msg)
                         
                         settings_window.after(0, show_error)
                         
                 except Exception as e:
+                    error_msg = str(e)
                     def show_error():
                         test_btn.config(text="Test Ollama Connection", state="normal")
-                        tk.messagebox.showerror("Connection Test", f"Unexpected error:\n{str(e)}")
+                        tk.messagebox.showerror("Connection Test", f"Unexpected error:\n{error_msg}")
                     
                     settings_window.after(0, show_error)
             
