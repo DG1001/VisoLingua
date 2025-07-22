@@ -43,7 +43,7 @@ def check_dependencies():
 def build_executable():
     """Build the Windows executable with anti-virus friendly settings"""
     print("BUILD Building VisoLingua.exe (Anti-Virus Optimized)...")
-    print("   ℹ️  Using --noupx and exclusions to reduce false positives")
+    print("   INFO: Using --noupx and exclusions to reduce false positives")
     
     # Check if icon exists
     icon_path = "assets/icons/app.ico"
