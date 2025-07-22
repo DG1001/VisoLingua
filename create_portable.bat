@@ -71,16 +71,36 @@ echo @echo off
 echo REM Create Desktop Shortcut for VisoLingua Portable
 echo.
 echo set "CURRENT_DIR=%%CD%%"
-echo set "DESKTOP_SHORTCUT=%%USERPROFILE%%\Desktop\VisoLingua.lnk"
+echo set "DESKTOP_DIR=%%USERPROFILE%%\Desktop"
+echo set "SHORTCUT_NAME=VisoLingua.lnk"
 echo.
 echo echo Creating desktop shortcut...
+echo echo Target: %%CURRENT_DIR%%\VisoLingua.exe
+echo echo Desktop: %%DESKTOP_DIR%%
 echo.
-echo powershell -Command "& {$WshShell = New-Object -comObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut('%%DESKTOP_SHORTCUT%%'); $Shortcut.TargetPath = '%%CURRENT_DIR%%\VisoLingua.exe'; $Shortcut.WorkingDirectory = '%%CURRENT_DIR%%'; $Shortcut.Description = 'VisoLingua - Live Translation Overlay Tool'; $Shortcut.Save()}"
+echo REM Check if desktop folder exists
+echo if not exist "%%DESKTOP_DIR%%" ^(
+echo     echo ❌ Desktop folder not found: %%DESKTOP_DIR%%
+echo     pause
+echo     exit /b 1
+echo ^)
+echo.
+echo REM Check if executable exists
+echo if not exist "%%CURRENT_DIR%%\VisoLingua.exe" ^(
+echo     echo ❌ VisoLingua.exe not found in current directory
+echo     pause
+echo     exit /b 1
+echo ^)
+echo.
+echo REM Create shortcut with proper error handling
+echo powershell -ExecutionPolicy Bypass -Command "try { $WshShell = New-Object -ComObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut('%%DESKTOP_DIR%%\%%SHORTCUT_NAME%%'); $Shortcut.TargetPath = '%%CURRENT_DIR%%\VisoLingua.exe'; $Shortcut.WorkingDirectory = '%%CURRENT_DIR%%'; $Shortcut.Description = 'VisoLingua - Live Translation Overlay Tool'; $Shortcut.Save(); Write-Host 'Shortcut created successfully' } catch { Write-Host 'Error:' $_.Exception.Message; exit 1 }"
 echo.
 echo if %%errorlevel%% equ 0 ^(
-echo     echo ✅ Desktop shortcut created!
+echo     echo ✅ Desktop shortcut created successfully!
+echo     echo    Location: %%DESKTOP_DIR%%\%%SHORTCUT_NAME%%
 echo ^) else ^(
-echo     echo ❌ Failed to create shortcut.
+echo     echo ❌ Failed to create desktop shortcut
+echo     echo    Try running as administrator if the problem persists
 echo ^)
 echo.
 echo pause
