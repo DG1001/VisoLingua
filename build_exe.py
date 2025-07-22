@@ -11,7 +11,7 @@ from pathlib import Path
 
 def clean_build():
     """Clean previous build artifacts"""
-    print("🧹 Cleaning previous build artifacts...")
+    print("CLEAN Cleaning previous build artifacts...")
     
     # Directories to clean
     dirs_to_clean = ['build', 'dist', '__pycache__']
@@ -29,31 +29,31 @@ def clean_build():
 
 def check_dependencies():
     """Check if PyInstaller is installed"""
-    print("🔍 Checking dependencies...")
+    print("CHECK Checking dependencies...")
     
     try:
         import PyInstaller
-        print(f"   ✅ PyInstaller version: {PyInstaller.__version__}")
+        print(f"   OK PyInstaller version: {PyInstaller.__version__}")
         return True
     except ImportError:
-        print("   ❌ PyInstaller not found!")
+        print("   ERROR PyInstaller not found!")
         print("   Install with: pip install pyinstaller")
         return False
 
 def build_executable():
     """Build the Windows executable with anti-virus friendly settings"""
-    print("🔨 Building VisoLingua.exe (Anti-Virus Optimized)...")
+    print("BUILD Building VisoLingua.exe (Anti-Virus Optimized)...")
     print("   ℹ️  Using --noupx and exclusions to reduce false positives")
     
     # Check if icon exists
     icon_path = "assets/icons/app.ico"
     if not os.path.exists(icon_path):
-        print(f"   ⚠️  Icon not found: {icon_path}")
+        print(f"   WARNING  Icon not found: {icon_path}")
         print("   Creating icon first...")
         try:
             subprocess.run([sys.executable, "create_icon.py"], check=True)
         except:
-            print("   ❌ Failed to create icon, continuing without...")
+            print("   ERROR Failed to create icon, continuing without...")
             icon_path = None
     
     # PyInstaller command with anti-virus friendly options
@@ -99,51 +99,51 @@ def build_executable():
         result = subprocess.run(cmd, capture_output=True, text=True)
         
         if result.returncode == 0:
-            print("   ✅ Build successful!")
+            print("   OK Build successful!")
             return True
         else:
-            print("   ❌ Build failed!")
+            print("   ERROR Build failed!")
             print("   STDOUT:", result.stdout)
             print("   STDERR:", result.stderr)
             return False
             
     except Exception as e:
-        print(f"   ❌ Build error: {e}")
+        print(f"   ERROR Build error: {e}")
         return False
 
 def verify_build():
     """Verify the built executable"""
-    print("🔍 Verifying build...")
+    print("CHECK Verifying build...")
     
     exe_path = Path('dist/VisoLingua.exe')
     
     if exe_path.exists():
         size_mb = exe_path.stat().st_size / (1024 * 1024)
-        print(f"   ✅ VisoLingua.exe created successfully!")
-        print(f"   📁 Location: {exe_path.absolute()}")
-        print(f"   📏 Size: {size_mb:.1f} MB")
+        print(f"   OK VisoLingua.exe created successfully!")
+        print(f"   FOLDER Location: {exe_path.absolute()}")
+        print(f"   SIZE Size: {size_mb:.1f} MB")
         
         # Test if executable runs (quick check)
         try:
             result = subprocess.run([str(exe_path), '--help'], 
                                   capture_output=True, text=True, timeout=10)
             if 'VisoLingua' in result.stdout:
-                print("   ✅ Executable runs correctly!")
+                print("   OK Executable runs correctly!")
             else:
-                print("   ⚠️  Executable runs but output unexpected")
+                print("   WARNING  Executable runs but output unexpected")
         except subprocess.TimeoutExpired:
-            print("   ⚠️  Executable test timed out (GUI app)")
+            print("   WARNING  Executable test timed out (GUI app)")
         except Exception as e:
-            print(f"   ⚠️  Could not test executable: {e}")
+            print(f"   WARNING  Could not test executable: {e}")
         
         return True
     else:
-        print("   ❌ VisoLingua.exe not found!")
+        print("   ERROR VisoLingua.exe not found!")
         return False
 
 def create_launcher_script():
     """Create a simple launcher script"""
-    print("🚀 Creating launcher script...")
+    print("START Creating launcher script...")
     
     launcher_content = '''@echo off
 REM VisoLingua Launcher
@@ -178,17 +178,17 @@ if %errorlevel% equ 0 (
     with open('dist/Start_VisoLingua.bat', 'w') as f:
         f.write(launcher_content)
     
-    print("   ✅ Launcher script created: dist/Start_VisoLingua.bat")
+    print("   OK Launcher script created: dist/Start_VisoLingua.bat")
 
 def main():
     """Main build process"""
     print("=" * 60)
-    print("🏗️  VisoLingua Windows Executable Builder")
+    print("BUILD  VisoLingua Windows Executable Builder")
     print("=" * 60)
     
     # Check if we're in the right directory
     if not os.path.exists('main.py'):
-        print("❌ Error: main.py not found!")
+        print("ERROR Error: main.py not found!")
         print("   Please run this script from the VisoLingua directory.")
         sys.exit(1)
     
@@ -201,38 +201,38 @@ def main():
     
     # Step 3: Build executable
     if not build_executable():
-        print("\n❌ Build failed!")
+        print("\nERROR Build failed!")
         sys.exit(1)
     
     # Step 4: Verify build
     if not verify_build():
-        print("\n❌ Build verification failed!")
+        print("\nERROR Build verification failed!")
         sys.exit(1)
     
     # Step 5: Create launcher
     create_launcher_script()
     
     print("\n" + "=" * 60)
-    print("🎉 BUILD SUCCESSFUL!")
+    print("SUCCESS BUILD SUCCESSFUL!")
     print("=" * 60)
-    print("📁 Your executable is ready:")
-    print(f"   📂 Location: {Path('dist').absolute()}")
-    print("   📄 Files created:")
+    print("FOLDER Your executable is ready:")
+    print(f"   LOCATION Location: {Path('dist').absolute()}")
+    print("   FILES Files created:")
     print("     • VisoLingua.exe (Main application)")
     print("     • Start_VisoLingua.bat (Launcher script)")
     print()
-    print("🚀 To run:")
+    print("START To run:")
     print("   • Double-click VisoLingua.exe")
     print("   • Or use Start_VisoLingua.bat for better error handling")
     print()
-    print("💡 Next steps:")
+    print("TIPS Next steps:")
     print("   • Test the executable on different Windows machines")
     print("   • If still flagged, consider code signing with a certificate")
     print("   • Submit false positive reports to antivirus vendors")
     print("   • Create shortcuts for desktop/start menu")
     print("   • Consider creating an installer for easier distribution")
     print()
-    print("🛡️  Anti-Virus Tips:")
+    print("SECURITY  Anti-Virus Tips:")
     print("   • Built with --noupx to avoid compression false positives")
     print("   • Excluded unused modules to reduce suspicion")
     print("   • If still detected, try running build multiple times")
