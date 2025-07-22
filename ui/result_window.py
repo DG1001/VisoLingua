@@ -6,14 +6,15 @@ import tkinter as tk
 from tkinter import ttk, scrolledtext, messagebox
 import pyperclip
 from typing import List, Dict
+from .base_window import BaseWindow
 
 
-class ResultWindow:
+class ResultWindow(BaseWindow):
     """Window for displaying translation results"""
     
     def __init__(self, parent, settings, toggle_callback=None, quit_callback=None):
+        super().__init__(settings)
         self.parent = parent
-        self.settings = settings
         self.toggle_callback = toggle_callback
         self.quit_callback = quit_callback
         
@@ -36,6 +37,9 @@ class ResultWindow:
         
         # Handle window close event
         self.window.protocol("WM_DELETE_WINDOW", self._on_window_close)
+        
+        # Setup font scaling for main window
+        self.setup_window_font_scaling(self.window)
         
     def _setup_ui(self):
         """Setup the result window UI"""
@@ -271,6 +275,9 @@ class ResultWindow:
         settings_window.transient(self.window)
         settings_window.grab_set()
         
+        # Setup font scaling for settings window
+        self.setup_window_font_scaling(settings_window)
+        
         # Create notebook for tabs
         notebook = ttk.Notebook(settings_window)
         notebook.pack(fill='both', expand=True, padx=10, pady=10)
@@ -329,6 +336,53 @@ class ResultWindow:
         ollama_timeout_entry = ttk.Entry(ollama_frame, textvariable=ollama_timeout_var, width=10)
         ollama_timeout_entry.pack(pady=5)
         
+        # Ollama model selection
+        ttk.Label(ollama_frame, text="Model Selection:").pack(pady=(20, 5))
+        
+        model_frame = ttk.Frame(ollama_frame)
+        model_frame.pack(pady=5, fill='x', padx=20)
+        
+        # Auto-detect models from Ollama
+        available_models_var = tk.StringVar(value="")
+        model_combo = ttk.Combobox(model_frame, textvariable=available_models_var, width=30)
+        model_combo.pack(side=tk.LEFT, padx=(0, 10))
+        
+        # Refresh models button
+        def refresh_models():
+            try:
+                import asyncio
+                from core.translator import Translator
+                
+                translator = Translator(self.settings)
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                result = loop.run_until_complete(translator.test_ollama_connection())
+                
+                if result['success']:
+                    models = result.get('available_models', [])
+                    model_combo['values'] = models
+                    if models:
+                        # Set current model if available
+                        current_model = self.settings.get('ollama', 'model', 'llava:7b')
+                        if current_model in models:
+                            available_models_var.set(current_model)
+                        else:
+                            available_models_var.set(models[0])
+                    tk.messagebox.showinfo("Models", f"Found {len(models)} models:\n" + "\n".join(models))
+                else:
+                    tk.messagebox.showerror("Error", f"Failed to get models:\n{result['error']}")
+                    # Fallback to manual input
+                    available_models_var.set(self.settings.get('ollama', 'model', 'llava:7b'))
+                    
+            except Exception as e:
+                tk.messagebox.showerror("Error", f"Error refreshing models:\n{str(e)}")
+                available_models_var.set(self.settings.get('ollama', 'model', 'llava:7b'))
+        
+        ttk.Button(model_frame, text="Refresh Models", command=refresh_models).pack(side=tk.LEFT)
+        
+        # Set initial model value
+        available_models_var.set(self.settings.get('ollama', 'model', 'llava:7b'))
+        
         # Model recommendations
         ttk.Label(ollama_frame, text="Recommended Ollama Models:", font=('TkDefaultFont', 10, 'bold')).pack(pady=(20, 10))
         
@@ -373,6 +427,61 @@ class ResultWindow:
         
         ttk.Button(ollama_frame, text="Test Ollama Connection", command=test_ollama).pack(pady=10)
         
+        # === UI Settings Tab ===
+        ui_frame = ttk.Frame(notebook)
+        notebook.add(ui_frame, text="UI Settings")
+        
+        # Font settings
+        ttk.Label(ui_frame, text="Font Settings:", font=('TkDefaultFont', 10, 'bold')).pack(pady=(10, 5))
+        
+        font_frame = ttk.Frame(ui_frame)
+        font_frame.pack(pady=10)
+        
+        # Current font size display
+        current_font_size = tk.IntVar(value=self.settings.getint('ui', 'font_size', 10))
+        ttk.Label(font_frame, text=f"Font Size: {current_font_size.get()}").pack(pady=5)
+        
+        # Font size scale
+        def on_font_size_change(value):
+            size = int(float(value))
+            current_font_size.set(size)
+            # Update label text
+            for widget in font_frame.winfo_children():
+                if isinstance(widget, ttk.Label) and "Font Size:" in str(widget.cget('text')):
+                    widget.configure(text=f"Font Size: {size}")
+                    break
+        
+        font_scale = ttk.Scale(font_frame, from_=8, to=24, value=current_font_size.get(), 
+                              command=on_font_size_change, orient='horizontal')
+        font_scale.pack(pady=5)
+        
+        # Font scaling buttons
+        button_frame = ttk.Frame(font_frame)
+        button_frame.pack(pady=10)
+        
+        def increase_font():
+            new_size = self.scale_fonts(1)
+            font_scale.set(new_size)
+            current_font_size.set(new_size)
+            
+        def decrease_font():
+            new_size = self.scale_fonts(-1)
+            font_scale.set(new_size)
+            current_font_size.set(new_size)
+        
+        ttk.Button(button_frame, text="A-", command=decrease_font).pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_frame, text="A+", command=increase_font).pack(side=tk.LEFT, padx=5)
+        
+        # Instructions
+        instructions = tk.Text(ui_frame, height=4, wrap=tk.WORD)
+        instructions.pack(pady=20, padx=20, fill='x')
+        instructions.insert('1.0', 
+            "Font Scaling Tips:\n"
+            "• Use Ctrl+Mouse Wheel to scale fonts in any window\n"
+            "• Use the slider or A-/A+ buttons to adjust font size\n"
+            "• Changes are saved automatically and apply to all windows")
+        instructions.config(state='disabled')
+        
         # Buttons
         button_frame = ttk.Frame(settings_window)
         button_frame.pack(pady=20)
@@ -386,6 +495,7 @@ class ResultWindow:
             # Save Ollama settings
             self.settings.set('ollama', 'enabled', str(ollama_enabled_var.get()).lower())
             self.settings.set('ollama', 'base_url', ollama_url_var.get())
+            self.settings.set('ollama', 'model', available_models_var.get())
             try:
                 timeout_val = int(ollama_timeout_var.get())
                 self.settings.set('ollama', 'timeout', str(timeout_val))

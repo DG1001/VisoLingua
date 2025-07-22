@@ -51,7 +51,9 @@ class Settings:
             'overlay_border_color': '#FF0000',
             'overlay_border_width': '2',
             'always_on_top': 'true',
-            'auto_save_position': 'true'
+            'auto_save_position': 'true',
+            'font_size': '10',
+            'font_family': 'TkDefaultFont'
         }
         
         self.config['translation'] = {
@@ -123,6 +125,21 @@ class Settings:
             config.update(ollama_models)
             
         return config
+    
+    def get_font_config(self) -> Dict[str, Any]:
+        """Get font configuration for UI"""
+        return {
+            'family': self.get('ui', 'font_family', 'TkDefaultFont'),
+            'size': self.getint('ui', 'font_size', 10)
+        }
+    
+    def scale_font(self, delta: int):
+        """Scale font size by delta"""
+        current_size = self.getint('ui', 'font_size', 10)
+        new_size = max(8, min(24, current_size + delta))  # Limit between 8-24
+        self.set('ui', 'font_size', str(new_size))
+        self.save()
+        return new_size
         
     def get_ollama_models(self) -> Dict[str, Dict]:
         """Get available Ollama models configuration"""
