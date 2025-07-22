@@ -63,7 +63,7 @@ jobs:
         Copy-Item "WINDOWS_INSTALLATION.md" "$portableDir/" -ErrorAction SilentlyContinue
         
         # Create launcher script
-        @"
+        $launcherScript = @'
 @echo off
 REM VisoLingua Portable Launcher
 
@@ -89,10 +89,11 @@ if %errorlevel% equ 0 (
     echo Check for error messages or missing dependencies.
     pause
 )
-"@ | Out-File -FilePath "$portableDir/Start VisoLingua.bat" -Encoding ascii
+'@
+        $launcherScript | Out-File -FilePath "$portableDir/Start VisoLingua.bat" -Encoding ascii
         
         # Create desktop shortcut script
-        @"
+        $shortcutScript = @'
 @echo off
 REM Create Desktop Shortcut for VisoLingua Portable
 
@@ -131,7 +132,7 @@ if not exist "%CURRENT_DIR%\VisoLingua.exe" (
 )
 
 REM Create shortcut with proper error handling
-powershell -ExecutionPolicy Bypass -Command "try { `$WshShell = New-Object -ComObject WScript.Shell; `$Shortcut = `$WshShell.CreateShortcut('%DESKTOP_DIR%\%SHORTCUT_NAME%'); `$Shortcut.TargetPath = '%CURRENT_DIR%\VisoLingua.exe'; `$Shortcut.WorkingDirectory = '%CURRENT_DIR%'; `$Shortcut.Description = 'VisoLingua - Live Translation Overlay Tool'; `$Shortcut.Save(); Write-Host 'Shortcut created successfully' } catch { Write-Host 'Error:' `$_.Exception.Message; exit 1 }"
+powershell -ExecutionPolicy Bypass -Command "try { $WshShell = New-Object -ComObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut('%DESKTOP_DIR%\%SHORTCUT_NAME%'); $Shortcut.TargetPath = '%CURRENT_DIR%\VisoLingua.exe'; $Shortcut.WorkingDirectory = '%CURRENT_DIR%'; $Shortcut.Description = 'VisoLingua - Live Translation Overlay Tool'; $Shortcut.Save(); Write-Host 'Shortcut created successfully' } catch { Write-Host 'Error:' $_.Exception.Message; exit 1 }"
 
 if %errorlevel% equ 0 (
     echo ✅ Desktop shortcut created successfully!
@@ -142,10 +143,11 @@ if %errorlevel% equ 0 (
 )
 
 pause
-"@ | Out-File -FilePath "$portableDir/Create Desktop Shortcut.bat" -Encoding ascii
+'@
+        $shortcutScript | Out-File -FilePath "$portableDir/Create Desktop Shortcut.bat" -Encoding ascii
         
         # Create portable README
-        @"
+        $readmeContent = @'
 # VisoLingua Portable
 
 Diese portable Version von VisoLingua benötigt keine Installation.
@@ -181,7 +183,8 @@ Diese portable Version von VisoLingua benötigt keine Installation.
 4. "Back to Capture" für neue Übersetzung
 
 Vollständige Anleitung: README.md
-"@ | Out-File -FilePath "$portableDir/PORTABLE_README.txt" -Encoding utf8
+'@
+        $readmeContent | Out-File -FilePath "$portableDir/PORTABLE_README.txt" -Encoding utf8
         
         Write-Host "✅ Portable package created: $portableDir"
         
