@@ -89,13 +89,13 @@ def create_app_icon():
     # Save ICO with all sizes
     images[0].save(ico_path, format='ICO', sizes=[(img.width, img.height) for img in images])
     
-    print(f"✅ ICO file created: {ico_path}")
+    print(f"✓ ICO file created: {ico_path}")
     print(f"📏 Sizes included: {[f'{img.width}x{img.height}' for img in images]}")
     
     # Also create a PNG version for preview
     png_path = "assets/icons/app.png"
     images[-1].save(png_path, format='PNG')
-    print(f"✅ PNG preview created: {png_path}")
+    print(f"✓ PNG preview created: {png_path}")
     
     return ico_path
 
@@ -106,18 +106,18 @@ def test_icon():
     try:
         # Try to open the ICO file
         with Image.open(ico_path) as img:
-            print(f"✅ ICO file is valid")
+            print(f"✓ ICO file is valid")
             print(f"   Format: {img.format}")
             print(f"   Size: {img.size}")
             print(f"   Mode: {img.mode}")
             
         return True
     except Exception as e:
-        print(f"❌ ICO file test failed: {e}")
+        print(f"X ICO file test failed: {e}")
         return False
 
 if __name__ == "__main__":
-    print("🎨 Creating VisoLingua Windows Icon...")
+    print("Creating VisoLingua Windows Icon...")
     print("=" * 50)
     
     try:
@@ -129,10 +129,10 @@ if __name__ == "__main__":
             print("\nTo rebuild the exe with the new icon:")
             print("  python build_exe.py")
         else:
-            print("\n❌ Icon creation failed!")
+            print("\nX Icon creation failed!")
             
     except Exception as e:
-        print(f"❌ Error creating icon: {e}")
+        print(f"X Error creating icon: {e}")
         print("\nAlternative: Create ICO file manually:")
         print("1. Create PNG images (16x16, 32x32, 48x48, 256x256)")
         print("2. Convert to ICO online: https://convertio.co/png-ico/")

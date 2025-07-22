@@ -30,10 +30,6 @@ jobs:
         pip install -r requirements.txt
         pip install pyinstaller
         
-    - name: Create icon
-      run: |
-        python create_icon.py
-        
     - name: Build executable
       run: |
         python build_exe.py
