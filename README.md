@@ -109,12 +109,16 @@ VisoLingua/
 
 ### 🏠 Lokale LLMs mit Ollama (100% privat, kostenlos)
 
-| Modell | Parameter | VRAM | RAM | Performance | Chinesisch |
-|--------|-----------|------|-----|-------------|------------|
-| **InternVL2 2B** | 2B | 6GB | 16GB | ⚡⚡⚡ Sehr schnell | ⭐⭐⭐ |
-| **LLaVA 7B** | 7B | 12GB | 32GB | ⚡⚡ Optimal | ⭐⭐⭐⭐ |
-| **Qwen2-VL 7B** | 7B | 12GB | 32GB | ⚡⚡ Optimal | ⭐⭐⭐⭐⭐ |
-| **CogVLM2 19B** | 19B | 24GB | 96GB | ⚡ Enterprise | ⭐⭐⭐⭐⭐ |
+| Modell | Parameter | Downloads | Performance | Chinesisch | Beschreibung |
+|--------|-----------|-----------|-------------|------------|-------------|
+| **gemma3** | 1b-27b | 9.4M | ⚡⚡⚡ | ⭐⭐⭐ | Aktuellstes Modell für Single-GPU |
+| **qwen2.5-vl** | 3b-72b | 400K | ⚡⚡⚡ | ⭐⭐⭐⭐⭐ | Flagship Vision-Modell von Qwen |
+| **llava** | 7b-34b | 7.9M | ⚡⚡ | ⭐⭐⭐⭐ | Bewährtes Vision-Sprachmodell |
+| **minicpm-v** | 8b | 2.4M | ⚡⚡ | ⭐⭐⭐⭐ | Kompaktes multimodales Modell |
+| **llama3.2-vision** | 11b-90b | 2.2M | ⚡⚡ | ⭐⭐⭐ | Meta's Vision-Modell |
+| **llava-llama3** | 8b | 1.3M | ⚡⚡ | ⭐⭐⭐⭐ | LLaVA mit Llama 3 Basis |
+| **llama4** | 16x17b-128x17b | 467K | ⚡ | ⭐⭐⭐ | Meta's neuestes multimodales Modell |
+| **moondream** | 1.8b | 223K | ⚡⚡⚡ | ⭐⭐ | Optimiert für Edge-Geräte |
 
 #### Ollama Setup:
 ```bash
