@@ -571,22 +571,15 @@ class ResultWindow(BaseWindow):
     def _apply_fonts_to_ui(self):
         """Apply fonts to all UI elements in the main window"""
         try:
-            # Apply to buttons
-            self.register_widget_font(self.copy_button, 'default')
-            self.register_widget_font(self.clear_button, 'default')
-            self.register_widget_font(self.back_button, 'default')
-            self.register_widget_font(self.quit_button, 'default')
-            self.register_widget_font(self.settings_button, 'default')
-            
-            # Apply to text area (main content)
+            # Apply to text area (main content) - this is a tk.Text widget
             self.register_widget_font(self.text_area, 'default')
             
-            # Apply to labels
+            # Apply to labels - these are tk.Label widgets, not ttk
             self.register_widget_font(self.status_label, 'default')
             self.register_widget_font(self.loading_label, 'default')
             
-            # Apply to combobox
-            self.register_widget_font(self.history_dropdown, 'default')
+            # Skip ttk widgets (buttons, combobox) as they use system fonts
+            # and don't support direct font configuration
             
         except AttributeError:
             # Some widgets might not be created yet

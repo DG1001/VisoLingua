@@ -30,8 +30,23 @@ class BaseWindow:
     def register_widget_font(self, widget: tk.Widget, font_name: str = 'default'):
         """Register a widget to use a specific font"""
         if font_name in self.fonts:
-            widget.configure(font=self.fonts[font_name])
-            self.widgets_with_fonts.append((widget, font_name))
+            try:
+                # Get widget class name to determine if it's ttk
+                widget_class = widget.__class__.__name__
+                widget_module = widget.__class__.__module__
+                
+                # Skip ttk widgets as they don't support font configuration directly
+                if 'ttk' in widget_module or widget_class.startswith('Ttk'):
+                    return
+                    
+                # Only configure font for standard tk widgets that support it
+                if hasattr(widget, 'keys') and 'font' in widget.keys():
+                    widget.configure(font=self.fonts[font_name])
+                    self.widgets_with_fonts.append((widget, font_name))
+                    
+            except (AttributeError, tk.TclError):
+                # Widget doesn't support font configuration
+                pass
             
     def scale_fonts(self, delta: int):
         """Scale all fonts by delta size"""
