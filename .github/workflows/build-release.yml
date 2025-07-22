@@ -91,5 +91,27 @@ jobs:
           VisoLingua-Portable-Windows.zip
           dist/VisoLingua.exe
         
-    # Note: Manual release creation recommended due to GitHub permissions
-    # Download artifacts from Actions tab and create release manually if needed
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.event.inputs.version || github.ref_name }}
+        name: VisoLingua ${{ github.event.inputs.version || github.ref_name }}
+        draft: false
+        prerelease: false
+        body: |
+          # VisoLingua ${{ github.event.inputs.version || github.ref_name }}
+          
+          ## 🚀 Neue Version verfügbar!
+          
+          ### 📦 Downloads:
+          - **VisoLingua-Portable-Windows.zip**: Komplettes portable Paket (empfohlen)
+          - **VisoLingua.exe**: Nur die Anwendung
+          
+          ### 🔧 Installation:
+          1. ZIP-Datei herunterladen und entpacken
+          2. "Start VisoLingua.bat" ausführen
+          3. API-Keys in den Einstellungen konfigurieren
+        files: |
+          VisoLingua-Portable-Windows.zip
+          dist/VisoLingua.exe
