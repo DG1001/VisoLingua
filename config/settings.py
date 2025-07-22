@@ -39,6 +39,13 @@ class Settings:
             'openai_api_key': ''
         }
         
+        self.config['ollama'] = {
+            'enabled': 'false',
+            'base_url': 'http://localhost:11434',
+            'model': 'llava:7b',
+            'timeout': '30'
+        }
+        
         self.config['ui'] = {
             'overlay_transparency': '0.7',
             'overlay_border_color': '#FF0000',
@@ -92,7 +99,7 @@ class Settings:
     @property
     def llm_config(self) -> Dict[str, Dict]:
         """Get LLM configuration"""
-        return {
+        config = {
             'gemini-2.5-flash': {
                 'endpoint': 'https://generativelanguage.googleapis.com/v1beta/',
                 'max_image_size': '4MB',
@@ -107,6 +114,53 @@ class Settings:
                 'endpoint': 'https://api.openai.com/v1/',
                 'max_image_size': '20MB',
                 'cost_per_1m_tokens': {'input': 0.15, 'output': 0.60}
+            }
+        }
+        
+        # Add Ollama models if enabled
+        if self.getboolean('ollama', 'enabled', False):
+            ollama_models = self.get_ollama_models()
+            config.update(ollama_models)
+            
+        return config
+        
+    def get_ollama_models(self) -> Dict[str, Dict]:
+        """Get available Ollama models configuration"""
+        base_url = self.get('ollama', 'base_url', 'http://localhost:11434')
+        timeout = self.getint('ollama', 'timeout', 30)
+        
+        return {
+            'ollama-llava-7b': {
+                'endpoint': f"{base_url}/api/generate",
+                'model_name': 'llava:7b',
+                'type': 'ollama',
+                'max_image_size': '20MB',
+                'cost_per_1m_tokens': {'input': 0.0, 'output': 0.0},  # Local = free
+                'timeout': timeout
+            },
+            'ollama-internvl-2b': {
+                'endpoint': f"{base_url}/api/generate", 
+                'model_name': 'internvl2:2b',
+                'type': 'ollama',
+                'max_image_size': '20MB',
+                'cost_per_1m_tokens': {'input': 0.0, 'output': 0.0},
+                'timeout': timeout
+            },
+            'ollama-qwen2vl-7b': {
+                'endpoint': f"{base_url}/api/generate",
+                'model_name': 'qwen2-vl:7b', 
+                'type': 'ollama',
+                'max_image_size': '20MB',
+                'cost_per_1m_tokens': {'input': 0.0, 'output': 0.0},
+                'timeout': timeout
+            },
+            'ollama-cogvlm2-19b': {
+                'endpoint': f"{base_url}/api/generate",
+                'model_name': 'cogvlm2:19b',
+                'type': 'ollama', 
+                'max_image_size': '20MB',
+                'cost_per_1m_tokens': {'input': 0.0, 'output': 0.0},
+                'timeout': timeout
             }
         }
         

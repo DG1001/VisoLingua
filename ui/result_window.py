@@ -267,43 +267,134 @@ class ResultWindow:
         # Simple settings dialog
         settings_window = tk.Toplevel(self.window)
         settings_window.title("VisoLingua Settings")
-        settings_window.geometry("400x300")
+        settings_window.geometry("500x500")
         settings_window.transient(self.window)
         settings_window.grab_set()
         
+        # Create notebook for tabs
+        notebook = ttk.Notebook(settings_window)
+        notebook.pack(fill='both', expand=True, padx=10, pady=10)
+        
+        # Cloud LLM Tab
+        cloud_frame = ttk.Frame(notebook)
+        notebook.add(cloud_frame, text="Cloud LLMs")
+        
+        # === Cloud LLM Tab Content ===
         # LLM selection
-        ttk.Label(settings_window, text="Default LLM:").pack(pady=10)
+        ttk.Label(cloud_frame, text="Default LLM:").pack(pady=10)
+        
+        # Get available LLMs (cloud + ollama if enabled)
+        available_llms = ['gemini-2.5-flash', 'gpt-4.1-mini', 'gpt-4.1-nano']
+        if self.settings.getboolean('ollama', 'enabled', False):
+            available_llms.extend(['ollama-llava-7b', 'ollama-internvl-2b', 'ollama-qwen2vl-7b', 'ollama-cogvlm2-19b'])
         
         llm_var = tk.StringVar(value=self.settings.get('api', 'default_llm', 'gemini-2.5-flash'))
         llm_combo = ttk.Combobox(
-            settings_window,
+            cloud_frame,
             textvariable=llm_var,
-            values=['gemini-2.5-flash', 'gpt-4.1-mini', 'gpt-4.1-nano'],
+            values=available_llms,
             state="readonly"
         )
         llm_combo.pack(pady=5)
         
         # API Keys
-        ttk.Label(settings_window, text="Gemini API Key:").pack(pady=(20, 5))
+        ttk.Label(cloud_frame, text="Gemini API Key:").pack(pady=(20, 5))
         gemini_key_var = tk.StringVar(value=self.settings.get('api', 'gemini_api_key', ''))
-        gemini_entry = ttk.Entry(settings_window, textvariable=gemini_key_var, width=40, show='*')
+        gemini_entry = ttk.Entry(cloud_frame, textvariable=gemini_key_var, width=40, show='*')
         gemini_entry.pack(pady=5)
         
-        ttk.Label(settings_window, text="OpenAI API Key:").pack(pady=(10, 5))
+        ttk.Label(cloud_frame, text="OpenAI API Key:").pack(pady=(10, 5))
         openai_key_var = tk.StringVar(value=self.settings.get('api', 'openai_api_key', ''))
-        openai_entry = ttk.Entry(settings_window, textvariable=openai_key_var, width=40, show='*')
+        openai_entry = ttk.Entry(cloud_frame, textvariable=openai_key_var, width=40, show='*')
         openai_entry.pack(pady=5)
+        
+        # === Local Ollama Tab ===
+        ollama_frame = ttk.Frame(notebook)
+        notebook.add(ollama_frame, text="Local Ollama")
+        
+        # Ollama enable/disable
+        ollama_enabled_var = tk.BooleanVar(value=self.settings.getboolean('ollama', 'enabled', False))
+        ollama_check = ttk.Checkbutton(ollama_frame, text="Enable Ollama (Local LLMs)", variable=ollama_enabled_var)
+        ollama_check.pack(pady=10)
+        
+        # Ollama URL
+        ttk.Label(ollama_frame, text="Ollama Server URL:").pack(pady=(10, 5))
+        ollama_url_var = tk.StringVar(value=self.settings.get('ollama', 'base_url', 'http://localhost:11434'))
+        ollama_url_entry = ttk.Entry(ollama_frame, textvariable=ollama_url_var, width=40)
+        ollama_url_entry.pack(pady=5)
+        
+        # Ollama timeout
+        ttk.Label(ollama_frame, text="Request Timeout (seconds):").pack(pady=(10, 5))
+        ollama_timeout_var = tk.StringVar(value=str(self.settings.getint('ollama', 'timeout', 30)))
+        ollama_timeout_entry = ttk.Entry(ollama_frame, textvariable=ollama_timeout_var, width=10)
+        ollama_timeout_entry.pack(pady=5)
+        
+        # Model recommendations
+        ttk.Label(ollama_frame, text="Recommended Ollama Models:", font=('TkDefaultFont', 10, 'bold')).pack(pady=(20, 10))
+        
+        models_text = tk.Text(ollama_frame, height=8, width=60, wrap=tk.WORD)
+        models_text.pack(pady=5)
+        
+        model_info = """• InternVL2 2B - Fastest, good for prototyping
+  ollama pull internvl2:2b
+
+• LLaVA 7B - Optimal balance of speed and quality  
+  ollama pull llava:7b
+
+• Qwen2-VL 7B - Best Chinese text recognition
+  ollama pull qwen2-vl:7b
+
+• CogVLM2 19B - Highest quality (requires more VRAM)
+  ollama pull cogvlm2:19b"""
+        
+        models_text.insert('1.0', model_info)
+        models_text.config(state='disabled')
+        
+        # Test Ollama connection button
+        def test_ollama():
+            import asyncio
+            from core.translator import Translator
+            
+            translator = Translator(self.settings)
+            try:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                result = loop.run_until_complete(translator.test_ollama_connection())
+                
+                if result['success']:
+                    tk.messagebox.showinfo("Ollama Test", 
+                        f"Connection successful!\n"
+                        f"Server: {result.get('server_url')}\n"
+                        f"Available models: {len(result.get('available_models', []))}")
+                else:
+                    tk.messagebox.showerror("Ollama Test", f"Connection failed:\n{result['error']}")
+            except Exception as e:
+                tk.messagebox.showerror("Ollama Test", f"Test failed: {str(e)}")
+        
+        ttk.Button(ollama_frame, text="Test Ollama Connection", command=test_ollama).pack(pady=10)
         
         # Buttons
         button_frame = ttk.Frame(settings_window)
         button_frame.pack(pady=20)
         
         def save_settings():
+            # Save cloud LLM settings
             self.settings.set('api', 'default_llm', llm_var.get())
             self.settings.set('api', 'gemini_api_key', gemini_key_var.get())
             self.settings.set('api', 'openai_api_key', openai_key_var.get())
+            
+            # Save Ollama settings
+            self.settings.set('ollama', 'enabled', str(ollama_enabled_var.get()).lower())
+            self.settings.set('ollama', 'base_url', ollama_url_var.get())
+            try:
+                timeout_val = int(ollama_timeout_var.get())
+                self.settings.set('ollama', 'timeout', str(timeout_val))
+            except ValueError:
+                self.settings.set('ollama', 'timeout', '30')  # Default fallback
+                
             self.settings.save()
             settings_window.destroy()
+            tk.messagebox.showinfo("Settings", "Settings saved successfully!")
             
         ttk.Button(button_frame, text="Save", command=save_settings).pack(side=tk.LEFT, padx=5)
         ttk.Button(button_frame, text="Cancel", command=settings_window.destroy).pack(side=tk.LEFT, padx=5)

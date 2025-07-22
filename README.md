@@ -99,25 +99,51 @@ VisoLingua/
 
 ## 🤖 Unterstützte LLMs
 
+### ☁️ Cloud LLMs (API-Keys erforderlich)
+
 | LLM | Geschwindigkeit | Kosten | Qualität | Empfehlung |
 |-----|----------------|--------|----------|------------|
 | **Gemini 2.5 Flash** | ⚡⚡⚡ | 💰 | ⭐⭐⭐⭐ | ✅ **Empfohlen** |
 | **GPT-4.1 Mini** | ⚡⚡ | 💰💰 | ⭐⭐⭐⭐⭐ | Für beste Qualität |
 | **GPT-4.1 Nano** | ⚡⚡⚡ | 💰 | ⭐⭐⭐ | Experimentell |
 
+### 🏠 Lokale LLMs mit Ollama (100% privat, kostenlos)
+
+| Modell | Parameter | VRAM | RAM | Performance | Chinesisch |
+|--------|-----------|------|-----|-------------|------------|
+| **InternVL2 2B** | 2B | 6GB | 16GB | ⚡⚡⚡ Sehr schnell | ⭐⭐⭐ |
+| **LLaVA 7B** | 7B | 12GB | 32GB | ⚡⚡ Optimal | ⭐⭐⭐⭐ |
+| **Qwen2-VL 7B** | 7B | 12GB | 32GB | ⚡⚡ Optimal | ⭐⭐⭐⭐⭐ |
+| **CogVLM2 19B** | 19B | 24GB | 96GB | ⚡ Enterprise | ⭐⭐⭐⭐⭐ |
+
+#### Ollama Setup:
+```bash
+# 1. Ollama installieren (https://ollama.ai)
+# 2. Modell pullen (Beispiel):
+ollama pull llava:7b
+
+# 3. In VisoLingua: Settings → Local Ollama → Enable
+```
+
 ## 📋 Systemanforderungen
 
-### Minimum
+### Minimum (Cloud LLMs)
 - **Python**: 3.8+
 - **Betriebssystem**: Windows 10+, Linux (GUI), macOS 10.14+
 - **RAM**: 2GB verfügbar
 - **Internet**: Für LLM-API-Calls
 
-### Empfohlen  
+### Empfohlen (Cloud LLMs) 
 - **Python**: 3.9+
 - **RAM**: 4GB+
 - **Display**: 1920x1080+ (High-DPI unterstützt)
 - **Internet**: Stabile Breitbandverbindung
+
+### Lokale LLMs (Ollama)
+- **GPU**: NVIDIA mit 6GB+ VRAM (empfohlen) oder CPU-only
+- **RAM**: 16GB+ (je nach Modell, siehe Tabelle oben)
+- **Speicher**: 5-40GB für Modelle
+- **Ollama**: Installiert und läuft lokal
 
 ## 🛠️ Technische Details
 
@@ -143,8 +169,8 @@ VisoLingua/
 
 Wir können nicht garantieren, dass die Applikation fehlerfrei ist und immer nur den ausgewählten Scan-Bereich an das LLM sendet. Zur Gewährleistung maximaler Privatsphäre und Sicherheit ist im Zweifel die Verwendung eines lokalen, selbst gehosteten LLM für die Übersetzung angeraten.
 
-### 🏠 Lokale LLM-Alternative (in Entwicklung)
-Eine Variante zur Anbindung von lokalen LLMs wie über **Ollama** ist aktuell in Entwicklung. Diese ermöglicht vollständig private Übersetzungen ohne externe API-Calls.
+### 🏠 Lokale LLM-Alternative (verfügbar!)
+VisoLingua unterstützt jetzt **Ollama** für vollständig private Übersetzungen ohne externe API-Calls. Aktivieren Sie lokale LLMs in den Einstellungen.
 
 ## 🆘 Support & Troubleshooting
 

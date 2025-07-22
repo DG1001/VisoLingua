@@ -56,6 +56,8 @@ class Translator:
                 result = await self._translate_with_gemini(optimized_image_data)
             elif llm_name.startswith('gpt'):
                 result = await self._translate_with_openai(optimized_image_data, llm_name)
+            elif llm_name.startswith('ollama'):
+                result = await self._translate_with_ollama(optimized_image_data, llm_name)
             else:
                 raise ValueError(f"Unsupported LLM: {llm_name}")
                 
@@ -248,6 +250,8 @@ class Translator:
                 key_configured = bool(self.settings.get('api', 'gemini_api_key'))
             elif llm_name.startswith('gpt'):
                 key_configured = bool(self.settings.get('api', 'openai_api_key'))
+            elif llm_name.startswith('ollama'):
+                key_configured = self.settings.getboolean('ollama', 'enabled', False)
             else:
                 key_configured = False
                 
@@ -257,3 +261,106 @@ class Translator:
             }
             
         return status
+        
+    async def _translate_with_ollama(self, image_data: bytes, llm_name: str) -> str:
+        """Translate using Ollama local API"""
+        if not self.settings.getboolean('ollama', 'enabled', False):
+            raise ValueError("Ollama not enabled in configuration")
+            
+        # Get Ollama configuration
+        llm_config = self.settings.llm_config.get(llm_name)
+        if not llm_config:
+            raise ValueError(f"Unknown Ollama model: {llm_name}")
+            
+        base_url = self.settings.get('ollama', 'base_url', 'http://localhost:11434')
+        model_name = llm_config['model_name']
+        timeout_seconds = self.settings.getint('ollama', 'timeout', 30)
+        
+        # Encode image to base64
+        image_b64 = base64.b64encode(image_data).decode('utf-8')
+        
+        # Build prompt - Ollama vision models work differently
+        prompt = self.settings.translation_prompt
+        if self._contains_chinese_chars(image_data):
+            prompt += "\n" + self.settings.chinese_optimized_prompt
+            
+        # Ollama API payload
+        payload = {
+            "model": model_name,
+            "prompt": prompt,
+            "images": [image_b64],
+            "stream": False,
+            "options": {
+                "temperature": 0.1,
+                "top_p": 0.9,
+                "num_predict": 1000
+            }
+        }
+        
+        # Make request to Ollama
+        timeout = aiohttp.ClientTimeout(total=timeout_seconds)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            try:
+                async with session.post(f"{base_url}/api/generate", json=payload) as response:
+                    if response.status != 200:
+                        error_text = await response.text()
+                        raise Exception(f"Ollama API error {response.status}: {error_text}")
+                        
+                    result = await response.json()
+                    
+                    if 'response' not in result:
+                        raise Exception(f"Invalid Ollama response format: {result}")
+                        
+                    translation = result['response'].strip()
+                    if not translation:
+                        raise Exception("Empty translation received from Ollama")
+                        
+                    return translation
+                    
+            except asyncio.TimeoutError:
+                raise Exception(f"Ollama request timed out after {timeout_seconds}s")
+            except aiohttp.ClientError as e:
+                raise Exception(f"Ollama connection error: {str(e)}")
+                
+    async def test_ollama_connection(self) -> Dict[str, Any]:
+        """Test Ollama server connection"""
+        if not self.settings.getboolean('ollama', 'enabled', False):
+            return {
+                'success': False,
+                'error': 'Ollama not enabled in configuration'
+            }
+            
+        base_url = self.settings.get('ollama', 'base_url', 'http://localhost:11434')
+        timeout_seconds = self.settings.getint('ollama', 'timeout', 30)
+        
+        try:
+            timeout = aiohttp.ClientTimeout(total=5)  # Quick test
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                # Test server availability
+                async with session.get(f"{base_url}/api/tags") as response:
+                    if response.status == 200:
+                        models = await response.json()
+                        available_models = [m['name'] for m in models.get('models', [])]
+                        
+                        return {
+                            'success': True,
+                            'server_url': base_url,
+                            'available_models': available_models,
+                            'configured_models': list(self.settings.get_ollama_models().keys())
+                        }
+                    else:
+                        return {
+                            'success': False,
+                            'error': f'Server returned status {response.status}'
+                        }
+                        
+        except asyncio.TimeoutError:
+            return {
+                'success': False,
+                'error': 'Connection timeout - is Ollama running?'
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': f'Connection failed: {str(e)}'
+            }
