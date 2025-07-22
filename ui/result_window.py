@@ -290,10 +290,10 @@ class ResultWindow(BaseWindow):
         # LLM selection
         ttk.Label(cloud_frame, text="Default LLM:").pack(pady=10)
         
-        # Get available LLMs (cloud + ollama if enabled)
+        # Get available LLMs (cloud + ollama option)
         available_llms = ['gemini-2.5-flash', 'gpt-4.1-mini', 'gpt-4.1-nano']
         if self.settings.getboolean('ollama', 'enabled', False):
-            available_llms.extend(['ollama-llava-7b', 'ollama-internvl-2b', 'ollama-qwen2vl-7b', 'ollama-cogvlm2-19b'])
+            available_llms.append('ollama')
         
         llm_var = tk.StringVar(value=self.settings.get('api', 'default_llm', 'gemini-2.5-flash'))
         llm_combo = ttk.Combobox(
@@ -303,6 +303,13 @@ class ResultWindow(BaseWindow):
             state="readonly"
         )
         llm_combo.pack(pady=5)
+        
+        # Ollama info
+        if self.settings.getboolean('ollama', 'enabled', False):
+            info_label = ttk.Label(cloud_frame, 
+                                  text="ℹ️ Ollama model selection is configured in the 'Local Ollama' tab",
+                                  font=('TkDefaultFont', 9))
+            info_label.pack(pady=5)
         
         # API Keys
         ttk.Label(cloud_frame, text="Gemini API Key:").pack(pady=(20, 5))
@@ -495,7 +502,10 @@ class ResultWindow(BaseWindow):
             self.settings.set('api', 'openai_api_key', openai_key_var.get())
             
             # Save Ollama settings
-            self.settings.set('ollama', 'enabled', str(ollama_enabled_var.get()).lower())
+            ollama_was_enabled = self.settings.getboolean('ollama', 'enabled', False)
+            ollama_now_enabled = ollama_enabled_var.get()
+            
+            self.settings.set('ollama', 'enabled', str(ollama_now_enabled).lower())
             self.settings.set('ollama', 'base_url', ollama_url_var.get())
             self.settings.set('ollama', 'model', available_models_var.get())
             try:
@@ -503,6 +513,10 @@ class ResultWindow(BaseWindow):
                 self.settings.set('ollama', 'timeout', str(timeout_val))
             except ValueError:
                 self.settings.set('ollama', 'timeout', '30')  # Default fallback
+            
+            # If Ollama was just enabled, switch to it
+            if not ollama_was_enabled and ollama_now_enabled:
+                self.settings.set('api', 'default_llm', 'ollama')
             
             # Save UI settings (font size)
             try:

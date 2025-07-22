@@ -56,7 +56,7 @@ class Translator:
                 result = await self._translate_with_gemini(optimized_image_data)
             elif llm_name.startswith('gpt'):
                 result = await self._translate_with_openai(optimized_image_data, llm_name)
-            elif llm_name.startswith('ollama'):
+            elif llm_name == 'ollama':
                 result = await self._translate_with_ollama(optimized_image_data, llm_name)
             else:
                 raise ValueError(f"Unsupported LLM: {llm_name}")
@@ -250,7 +250,7 @@ class Translator:
                 key_configured = bool(self.settings.get('api', 'gemini_api_key'))
             elif llm_name.startswith('gpt'):
                 key_configured = bool(self.settings.get('api', 'openai_api_key'))
-            elif llm_name.startswith('ollama'):
+            elif llm_name == 'ollama':
                 key_configured = self.settings.getboolean('ollama', 'enabled', False)
             else:
                 key_configured = False

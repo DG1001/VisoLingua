@@ -119,10 +119,20 @@ class Settings:
             }
         }
         
-        # Add Ollama models if enabled
+        # Add Ollama as single option if enabled
         if self.getboolean('ollama', 'enabled', False):
-            ollama_models = self.get_ollama_models()
-            config.update(ollama_models)
+            base_url = self.get('ollama', 'base_url', 'http://localhost:11434')
+            timeout = self.getint('ollama', 'timeout', 30)
+            selected_model = self.get('ollama', 'model', 'llava:7b')
+            
+            config['ollama'] = {
+                'endpoint': f"{base_url}/api/generate",
+                'model_name': selected_model,
+                'type': 'ollama',
+                'max_image_size': '20MB',
+                'cost_per_1m_tokens': {'input': 0.0, 'output': 0.0},  # Local = free
+                'timeout': timeout
+            }
             
         return config
     
