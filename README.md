@@ -34,11 +34,26 @@ Ein benutzerfreundliches Desktop-Tool für Live-Übersetzung mit transparentem O
 ## 🚀 Quick Start
 
 ### Installation
+
+#### Option 1: Direkt mit Python (Empfohlen)
 ```bash
-# 1. Repository klonen oder herunterladen
-# 2. Python 3.8+ installieren
+# 1. Repository klonen
+git clone https://github.com/username/VisoLingua.git
+cd VisoLingua
+
+# 2. Python 3.8+ installieren (falls nicht vorhanden)
 # 3. Dependencies installieren
 pip install -r requirements.txt
+
+# 4. App starten
+python main.py
+```
+
+#### Option 2: Lokale EXE erstellen
+```bash
+# Nach Installation der Dependencies:
+python build_exe.py
+# Erstellt dist/VisoLingua.exe (kann Virenwarnungen auslösen)
 ```
 
 ### Erste Einrichtung
@@ -172,6 +187,9 @@ ollama pull llava:7b
 **VERWENDUNG AUF EIGENE GEFAHR!**
 
 Wir können nicht garantieren, dass die Applikation fehlerfrei ist und immer nur den ausgewählten Scan-Bereich an das LLM sendet. Zur Gewährleistung maximaler Privatsphäre und Sicherheit ist im Zweifel die Verwendung eines lokalen, selbst gehosteten LLM für die Übersetzung angeraten.
+
+### 🛡️ Anti-Virus False-Positives
+PyInstaller-EXE-Dateien werden häufig fälschlicherweise als Virus erkannt. **Empfehlung: Nutzen Sie Python direkt** (`python main.py`) statt einer EXE-Datei.
 
 ### 🏠 Lokale LLM-Alternative (verfügbar!)
 VisoLingua unterstützt jetzt **Ollama** für vollständig private Übersetzungen ohne externe API-Calls. Aktivieren Sie lokale LLMs in den Einstellungen.
