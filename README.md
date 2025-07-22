@@ -137,6 +137,15 @@ VisoLingua/
 - [OverText](https://github.com/thiswillbeyourgithub/OverText) - Transparente Overlay-Funktionalität
 - Entwickelt für defensive Sicherheitszwecke und Sprachlernunterstützung
 
+## ⚠️ Wichtige Sicherheitshinweise
+
+**VERWENDUNG AUF EIGENE GEFAHR!**
+
+Wir können nicht garantieren, dass die Applikation fehlerfrei ist und immer nur den ausgewählten Scan-Bereich an das LLM sendet. Zur Gewährleistung maximaler Privatsphäre und Sicherheit ist im Zweifel die Verwendung eines lokalen, selbst gehosteten LLM für die Übersetzung angeraten.
+
+### 🏠 Lokale LLM-Alternative (in Entwicklung)
+Eine Variante zur Anbindung von lokalen LLMs wie über **Ollama** ist aktuell in Entwicklung. Diese ermöglicht vollständig private Übersetzungen ohne externe API-Calls.
+
 ## 🆘 Support & Troubleshooting
 
 ### Häufige Probleme
