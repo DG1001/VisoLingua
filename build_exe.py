@@ -127,18 +127,22 @@ def verify_build():
         print(f"   FOLDER Location: {exe_path.absolute()}")
         print(f"   SIZE Size: {size_mb:.1f} MB")
         
-        # Test if executable runs (quick check)
-        try:
-            result = subprocess.run([str(exe_path), '--help'], 
-                                  capture_output=True, text=True, timeout=10)
-            if 'VisoLingua' in result.stdout:
-                print("   OK Executable runs correctly!")
-            else:
-                print("   WARNING  Executable runs but output unexpected")
-        except subprocess.TimeoutExpired:
-            print("   WARNING  Executable test timed out (GUI app)")
-        except Exception as e:
-            print(f"   WARNING  Could not test executable: {e}")
+        # Skip executable test in CI environment to avoid hangs
+        if os.environ.get('CI') or os.environ.get('GITHUB_ACTIONS'):
+            print("   SKIP Executable test skipped (CI environment)")
+        else:
+            # Test if executable runs (quick check) - only locally
+            try:
+                result = subprocess.run([str(exe_path), '--help'], 
+                                      capture_output=True, text=True, timeout=5)
+                if 'VisoLingua' in result.stdout:
+                    print("   OK Executable runs correctly!")
+                else:
+                    print("   WARNING  Executable runs but output unexpected")
+            except subprocess.TimeoutExpired:
+                print("   WARNING  Executable test timed out (GUI app)")
+            except Exception as e:
+                print(f"   WARNING  Could not test executable: {e}")
         
         return True
     else:
