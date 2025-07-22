@@ -71,16 +71,28 @@ echo @echo off
 echo REM Create Desktop Shortcut for VisoLingua Portable
 echo.
 echo set "CURRENT_DIR=%%CD%%"
-echo set "DESKTOP_DIR=%%USERPROFILE%%\Desktop"
 echo set "SHORTCUT_NAME=VisoLingua.lnk"
 echo.
 echo echo Creating desktop shortcut...
 echo echo Target: %%CURRENT_DIR%%\VisoLingua.exe
-echo echo Desktop: %%DESKTOP_DIR%%
+echo.
+echo REM Try to find the correct desktop path ^(OneDrive or local^)
+echo set "DESKTOP_DIR=%%USERPROFILE%%\Desktop"
+echo if not exist "%%DESKTOP_DIR%%" ^(
+echo     set "DESKTOP_DIR=%%USERPROFILE%%\OneDrive\Desktop"
+echo ^)
+echo if not exist "%%DESKTOP_DIR%%" ^(
+echo     set "DESKTOP_DIR=%%PUBLIC%%\Desktop"
+echo ^)
+echo.
+echo echo Desktop path: %%DESKTOP_DIR%%
 echo.
 echo REM Check if desktop folder exists
 echo if not exist "%%DESKTOP_DIR%%" ^(
-echo     echo ❌ Desktop folder not found: %%DESKTOP_DIR%%
+echo     echo ❌ Desktop folder not found. Checked:
+echo     echo    - %%USERPROFILE%%\Desktop
+echo     echo    - %%USERPROFILE%%\OneDrive\Desktop  
+echo     echo    - %%PUBLIC%%\Desktop
 echo     pause
 echo     exit /b 1
 echo ^)
