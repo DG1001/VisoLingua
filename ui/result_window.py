@@ -39,7 +39,11 @@ class ResultWindow(BaseWindow):
         self.window.protocol("WM_DELETE_WINDOW", self._on_window_close)
         
         # Setup font scaling for main window
-        self.setup_window_font_scaling(self.window)
+        self.setup_fonts()
+        self.bind_font_scaling(self.window)
+        
+        # Apply fonts to all UI elements
+        self._apply_fonts_to_ui()
         
     def _setup_ui(self):
         """Setup the result window UI"""
@@ -563,3 +567,27 @@ class ResultWindow(BaseWindow):
         """Destroy result window"""
         if self.window:
             self.window.destroy()
+            
+    def _apply_fonts_to_ui(self):
+        """Apply fonts to all UI elements in the main window"""
+        try:
+            # Apply to buttons
+            self.register_widget_font(self.copy_button, 'default')
+            self.register_widget_font(self.clear_button, 'default')
+            self.register_widget_font(self.back_button, 'default')
+            self.register_widget_font(self.quit_button, 'default')
+            self.register_widget_font(self.settings_button, 'default')
+            
+            # Apply to text area (main content)
+            self.register_widget_font(self.text_area, 'default')
+            
+            # Apply to labels
+            self.register_widget_font(self.status_label, 'default')
+            self.register_widget_font(self.loading_label, 'default')
+            
+            # Apply to combobox
+            self.register_widget_font(self.history_dropdown, 'default')
+            
+        except AttributeError:
+            # Some widgets might not be created yet
+            pass

@@ -5,14 +5,15 @@ Transparent overlay window for screenshot capture
 import tkinter as tk
 from tkinter import ttk
 from utils.helpers import get_safe_cursor
+from .base_window import BaseWindow
 
 
-class OverlayWindow:
+class OverlayWindow(BaseWindow):
     """Transparent overlay window for capturing screenshots"""
     
     def __init__(self, parent, settings, on_screenshot_callback, toggle_callback=None, quit_callback=None):
+        super().__init__(settings)
         self.parent = parent
-        self.settings = settings
         self.on_screenshot = on_screenshot_callback
         self.toggle_callback = toggle_callback
         self.quit_callback = quit_callback
@@ -50,6 +51,10 @@ class OverlayWindow:
         
         # Handle window close event - should quit the entire app
         self.window.protocol("WM_DELETE_WINDOW", self._on_window_close)
+        
+        # Setup font scaling
+        self.setup_fonts()
+        self.bind_font_scaling(self.window)
         
         # Drag and resize state
         self.dragging = False
