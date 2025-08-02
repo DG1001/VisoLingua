@@ -6,3 +6,5 @@ config/config.ini
 
 # Log files
 Log/
+build/VisoLingua/
+dist/

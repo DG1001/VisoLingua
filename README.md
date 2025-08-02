@@ -19,6 +19,7 @@ Ein benutzerfreundliches Desktop-Tool für Live-Übersetzung mit transparentem O
 - **LLM-Integration**: Unterstützt Gemini 2.5 Flash und GPT-4 Mini/Nano  
 - **Ein-Klick-Übersetzung**: Einfach in das Overlay-Fenster klicken
 - **Dual-Modus-System**: Nahtloser Wechsel zwischen Capture- und Ergebnis-Modus
+- **🤖 Ask AI**: Stelle Fragen zu Übersetzungsergebnissen für Kontext, Erklärungen und Details
 
 ### 🌏 **Sprachunterstützung**
 - **Chinesisch-Fokus**: Optimiert für vereinfachte und traditionelle chinesische Zeichen
@@ -58,11 +59,18 @@ python build_exe.py
 
 ### Erste Einrichtung
 ```bash
-# App starten
+# 1. Konfigurationsdatei erstellen
+cp config/config_sample.ini config/config.ini
+
+# 2. API-Schlüssel eintragen (config/config.ini bearbeiten)
+# - Gemini API Key von https://aistudio.google.com/
+# - Oder OpenAI API Key von https://platform.openai.com/
+
+# 3. App starten
 python main.py
 
 # Bei erstem Start:
-# 1. API-Schlüssel in Settings eingeben
+# 1. API-Schlüssel in Settings überprüfen/eingeben
 # 2. Standard-LLM auswählen (empfohlen: Gemini 2.5 Flash)
 # 3. Fertig!
 ```
@@ -78,7 +86,14 @@ python main.py
 2. **Scan-Fenster positionieren**: Über den zu übersetzenden Text ziehen
 3. **Screenshot aufnehmen**: Ins rote Overlay-Fenster klicken
 4. **Übersetzung erhalten**: Automatischer Wechsel zum Ergebnis-Fenster
-5. **Zurück zum Scan**: "Back to Capture" Button oder Fenster schließen
+5. **🤖 AI fragen** (optional): Frage zur Übersetzung in das Textfeld eingeben und "Ask AI" klicken
+6. **Zurück zum Scan**: "Back to Capture" Button oder Fenster schließen
+
+### Ask AI Funktion
+Nach einer Übersetzung können Sie dem AI Fragen über das Ergebnis stellen:
+- **Beispiele**: "Was bedeutet dieser Kontext?", "Gibt es alternative Übersetzungen?", "Erkläre die Grammatik"
+- **Antwort**: Wird direkt im Ergebnis-Fenster unter der ursprünglichen Übersetzung angezeigt
+- **Nutzung**: Gleiche LLM-Konfiguration wie für Übersetzungen (Gemini/OpenAI/Ollama)
 
 ### Modi wechseln
 - **Doppelklick** auf Overlay-Titelleiste → Zum Ergebnis-Fenster
@@ -99,10 +114,11 @@ VisoLingua/
 ├── main.py              # Hauptprogramm
 ├── config/
 │   ├── settings.py      # Konfigurationsverwaltung
-│   └── config.ini       # Benutzereinstellungen
+│   ├── config.ini       # Benutzereinstellungen (wird lokal erstellt)
+│   └── config_sample.ini # Konfigurationsvorlage
 ├── ui/
 │   ├── overlay.py       # Transparentes Overlay
-│   └── result_window.py # Ergebnisfenster
+│   └── result_window.py # Ergebnisfenster mit Ask AI Funktion
 ├── core/
 │   ├── screenshot.py    # Screenshot-Erfassung
 │   └── translator.py    # LLM-Integration
