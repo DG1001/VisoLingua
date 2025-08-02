@@ -12,11 +12,12 @@ from .base_window import BaseWindow
 class ResultWindow(BaseWindow):
     """Window for displaying translation results"""
     
-    def __init__(self, parent, settings, toggle_callback=None, quit_callback=None):
+    def __init__(self, parent, settings, toggle_callback=None, quit_callback=None, translator=None):
         super().__init__(settings)
         self.parent = parent
         self.toggle_callback = toggle_callback
         self.quit_callback = quit_callback
+        self.translator = translator
         
         # Create result window
         self.window = tk.Toplevel(parent)
@@ -69,6 +70,31 @@ class ResultWindow(BaseWindow):
             state=tk.DISABLED
         )
         self.text_area.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
+        
+        # AI Question frame
+        question_frame = ttk.Frame(main_frame)
+        question_frame.pack(fill=tk.X, pady=(0, 10))
+        
+        ttk.Label(question_frame, text="Ask AI about the result:").pack(anchor=tk.W, pady=(0, 5))
+        
+        # Question input area
+        question_entry_frame = ttk.Frame(question_frame)
+        question_entry_frame.pack(fill=tk.X, pady=(0, 5))
+        
+        self.question_entry = tk.Text(
+            question_entry_frame,
+            height=2,
+            wrap=tk.WORD,
+            font=('Arial', 10)
+        )
+        self.question_entry.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
+        
+        self.ask_button = ttk.Button(
+            question_entry_frame,
+            text="Ask AI",
+            command=self._ask_ai_question
+        )
+        self.ask_button.pack(side=tk.RIGHT)
         
         # Button frame
         button_frame = ttk.Frame(main_frame)
@@ -550,6 +576,211 @@ class ResultWindow(BaseWindow):
             # Fallback
             self.parent.quit()
             
+    def _ask_ai_question(self):
+        """Ask AI a question about the current translation result"""
+        question = self.question_entry.get("1.0", tk.END).strip()
+        if not question:
+            return
+            
+        if not self.current_translation:
+            messagebox.showwarning("No Result", "Please translate some text first before asking questions.")
+            return
+            
+        if not self.translator:
+            messagebox.showerror("Error", "AI translator not available.")
+            return
+            
+        # Show processing indicator
+        self.ask_button.config(state=tk.DISABLED, text="Processing...")
+        self.question_entry.config(state=tk.DISABLED)
+        
+        # Run AI question asynchronously
+        import asyncio
+        import threading
+        
+        def run_question():
+            try:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                
+                # Create prompt combining the translation and the question
+                combined_prompt = f"""Based on this translation result:
+"{self.current_translation}"
+
+User question: {question}
+
+Please provide a helpful response to the user's question about the translation."""
+                
+                # Use the existing translator to ask the question
+                result = loop.run_until_complete(self._ask_ai_text_question(combined_prompt))
+                loop.close()
+                
+                # Display the result in the main text area
+                self.parent.after(0, lambda: self._display_ai_response(result))
+                
+            except Exception as e:
+                self.parent.after(0, lambda: self._display_ai_error(str(e)))
+                
+        threading.Thread(target=run_question, daemon=True).start()
+        
+    async def _ask_ai_text_question(self, prompt: str) -> str:
+        """Ask AI a text-based question"""
+        # Get current LLM configuration
+        llm_name = self.settings.get('api', 'default_llm', 'gemini-2.5-flash')
+        
+        if llm_name.startswith('gemini'):
+            return await self._ask_gemini_text(prompt)
+        elif llm_name.startswith('gpt'):
+            return await self._ask_openai_text(prompt, llm_name)
+        elif llm_name == 'ollama':
+            return await self._ask_ollama_text(prompt)
+        else:
+            raise ValueError(f"Unsupported LLM: {llm_name}")
+            
+    async def _ask_gemini_text(self, prompt: str) -> str:
+        """Ask Gemini a text-only question"""
+        import aiohttp
+        
+        api_key = self.settings.get('api', 'gemini_api_key')
+        if not api_key:
+            raise ValueError("Gemini API key not configured")
+            
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={api_key}"
+        
+        payload = {
+            "contents": [{
+                "parts": [{"text": prompt}]
+            }],
+            "generationConfig": {
+                "temperature": 0.3,
+                "topK": 1,
+                "topP": 1,
+                "maxOutputTokens": 1024,
+            }
+        }
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, json=payload) as response:
+                if response.status != 200:
+                    error_text = await response.text()
+                    raise Exception(f"Gemini API error ({response.status}): {error_text}")
+                    
+                result = await response.json()
+                
+                if 'candidates' not in result or not result['candidates']:
+                    raise Exception("No response from Gemini")
+                    
+                return result['candidates'][0]['content']['parts'][0]['text']
+                
+    async def _ask_openai_text(self, prompt: str, model_name: str) -> str:
+        """Ask OpenAI a text-only question"""
+        import aiohttp
+        
+        api_key = self.settings.get('api', 'openai_api_key')
+        if not api_key:
+            raise ValueError("OpenAI API key not configured")
+            
+        # Map model name
+        model_mapping = {
+            'gpt-4.1-mini': 'gpt-4o-mini',
+            'gpt-4.1-nano': 'gpt-4o-mini'
+        }
+        
+        api_model = model_mapping.get(model_name, 'gpt-4o-mini')
+        
+        url = "https://api.openai.com/v1/chat/completions"
+        
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+        
+        payload = {
+            "model": api_model,
+            "messages": [
+                {"role": "user", "content": prompt}
+            ],
+            "max_tokens": 1024,
+            "temperature": 0.3
+        }
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, headers=headers, json=payload) as response:
+                if response.status != 200:
+                    error_text = await response.text()
+                    raise Exception(f"OpenAI API error ({response.status}): {error_text}")
+                    
+                result = await response.json()
+                
+                if 'choices' not in result or not result['choices']:
+                    raise Exception("No response from OpenAI")
+                    
+                return result['choices'][0]['message']['content']
+                
+    async def _ask_ollama_text(self, prompt: str) -> str:
+        """Ask Ollama a text-only question"""
+        import aiohttp
+        
+        if not self.settings.getboolean('ollama', 'enabled', False):
+            raise ValueError("Ollama not enabled in configuration")
+            
+        base_url = self.settings.get('ollama', 'base_url', 'http://localhost:11434')
+        model_name = self.settings.get('ollama', 'model', 'llava:7b')
+        timeout_seconds = self.settings.getint('ollama', 'timeout', 30)
+        
+        payload = {
+            "model": model_name,
+            "prompt": prompt,
+            "stream": False,
+            "options": {
+                "temperature": 0.3,
+                "top_p": 0.9,
+                "num_predict": 1000
+            }
+        }
+        
+        timeout = aiohttp.ClientTimeout(total=timeout_seconds)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.post(f"{base_url}/api/generate", json=payload) as response:
+                if response.status != 200:
+                    error_text = await response.text()
+                    raise Exception(f"Ollama API error {response.status}: {error_text}")
+                    
+                result = await response.json()
+                
+                if 'response' not in result:
+                    raise Exception(f"Invalid Ollama response format: {result}")
+                    
+                return result['response'].strip()
+                
+    def _display_ai_response(self, response: str):
+        """Display AI response in the result text area"""
+        # Add separator and the AI response
+        separator = "\n" + "="*50 + "\nAI Response:\n" + "="*50 + "\n"
+        combined_text = self.current_translation + separator + response
+        
+        # Update text area
+        self.text_area.config(state=tk.NORMAL)
+        self.text_area.delete(1.0, tk.END)
+        self.text_area.insert(1.0, combined_text)
+        self.text_area.config(state=tk.DISABLED)
+        
+        # Clear question input and re-enable controls
+        self.question_entry.delete("1.0", tk.END)
+        self.question_entry.config(state=tk.NORMAL)
+        self.ask_button.config(state=tk.NORMAL, text="Ask AI")
+        
+        # Update status
+        self.status_label.config(text="AI question answered")
+        
+    def _display_ai_error(self, error_message: str):
+        """Display AI error message"""
+        messagebox.showerror("AI Error", f"Failed to get AI response: {error_message}")
+        
+        # Re-enable controls
+        self.question_entry.config(state=tk.NORMAL)
+        self.ask_button.config(state=tk.NORMAL, text="Ask AI")
+
     def _on_window_close(self):
         """Handle window close event - switch back to capture"""
         self._back_to_capture()
@@ -573,6 +804,9 @@ class ResultWindow(BaseWindow):
         try:
             # Apply to text area (main content) - this is a tk.Text widget
             self.register_widget_font(self.text_area, 'default')
+            
+            # Apply to question entry text widget
+            self.register_widget_font(self.question_entry, 'default')
             
             # Apply to labels - these are tk.Label widgets, not ttk
             self.register_widget_font(self.status_label, 'default')

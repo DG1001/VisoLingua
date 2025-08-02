@@ -29,7 +29,7 @@ class VisoLinguaApp:
         
         # Initialize windows
         self.overlay = OverlayWindow(self.root, self.settings, self.on_screenshot, self.switch_to_result, self.quit)
-        self.result_window = ResultWindow(self.root, self.settings, self.switch_to_capture, self.quit)
+        self.result_window = ResultWindow(self.root, self.settings, self.switch_to_capture, self.quit, self.translator)
         
         # Current mode: 'capture' or 'result'
         self.current_mode = 'capture'
