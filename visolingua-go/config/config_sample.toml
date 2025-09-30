@@ -1,0 +1,19 @@
+# VisoLingua Go Configuration
+# Copy this to ~/.config/visolingua/config.toml and edit with your API keys
+
+[llm]
+provider = "gemini"  # Options: "gemini", "openai", "ollama"
+gemini_model = "gemini-2.0-flash-exp"
+openai_model = "gpt-4o-mini"
+ollama_url = "http://localhost:11434"
+ollama_model = "llava"
+
+[api_keys]
+gemini = ""  # Get from: https://aistudio.google.com/
+openai = ""  # Get from: https://platform.openai.com/
+
+[translation]
+target_language = "German"
+
+[ui]
+transparency = 0.3
