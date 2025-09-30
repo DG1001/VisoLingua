@@ -67,15 +67,17 @@ func main() {
 		AssetServer: &assetserver.Options{
 			Assets: distFS,
 		},
-		BackgroundColour: &options.RGBA{R: 26, G: 26, B: 26, A: 255},
+		BackgroundColour: &options.RGBA{R: 0, G: 0, B: 0, A: 0},
 		OnStartup:        app.startup,
 		Bind: []interface{}{
 			app,
 		},
-		Logger: logger.NewDefaultLogger(),
+		Logger:          logger.NewDefaultLogger(),
+		AlwaysOnTop:     true,
+		Frameless:       false,
 		Windows: &windows.Options{
-			WebviewIsTransparent: false,
-			WindowIsTranslucent:  false,
+			WebviewIsTransparent: true,
+			WindowIsTranslucent:  true,
 		},
 	})
 

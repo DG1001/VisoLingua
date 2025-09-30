@@ -212,20 +212,18 @@
             try {
                 showStatus('Capturing screenshot...');
 
-                // Get window bounds (position and size)
-                const bounds = await window.runtime.WindowGetPosition();
-                const size = await window.runtime.WindowGetSize();
+                // For now, use fixed screen coordinates
+                // TODO: Add proper window position detection in Go backend
+                // Capture a 800x600 area from top-left of primary monitor
+                const x = 100;
+                const y = 100;
+                const width = 800;
+                const height = 600;
 
-                console.log('Window position:', bounds);
-                console.log('Window size:', size);
+                console.log('Capturing area:', { x, y, width, height });
 
                 // Capture screenshot
-                const imageBase64 = await window.go.main.App.CaptureScreenshot(
-                    bounds.x,
-                    bounds.y,
-                    size.w,
-                    size.h
-                );
+                const imageBase64 = await window.go.main.App.CaptureScreenshot(x, y, width, height);
 
                 showStatus('Translating...');
 
