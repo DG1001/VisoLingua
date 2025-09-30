@@ -64,6 +64,16 @@ jobs:
             exit 1
           }
 
+          # Check for NSIS installer
+          $installer = Get-ChildItem -Path "src-tauri/target/release/bundle/nsis" -Filter "*-setup.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($installer) {
+            Write-Host "✅ NSIS installer found: $($installer.Name)"
+            $size = $installer.Length / 1MB
+            Write-Host "📏 Installer size: $($size.ToString('F1')) MB"
+          } else {
+            Write-Host "⚠️ No NSIS installer found (bundle may be disabled)"
+          }
+
       - name: Create portable package
         working-directory: visolingua-rust
         run: |
@@ -185,6 +195,7 @@ jobs:
           path: |
             visolingua-rust/VisoLingua-Rust-Windows.zip
             visolingua-rust/src-tauri/target/release/visolingua.exe
+            visolingua-rust/src-tauri/target/release/bundle/nsis/*-setup.exe
 
       - name: Create Release
         if: github.event.inputs.version != 'latest'
@@ -225,5 +236,6 @@ jobs:
           files: |
             visolingua-rust/VisoLingua-Rust-Windows.zip
             visolingua-rust/src-tauri/target/release/visolingua.exe
+            visolingua-rust/src-tauri/target/release/bundle/nsis/*-setup.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
