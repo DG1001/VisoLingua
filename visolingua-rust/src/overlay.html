@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisoLingua - Capture</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: transparent;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        #capture-area {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 3px solid #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #instructions {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            pointer-events: none;
+            max-width: 300px;
+        }
+
+        #instructions h2 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        #instructions p {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: none;
+        }
+
+        .status.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="capture-area">
+        <div id="instructions">
+            <h2>🎯 VisoLingua Capture</h2>
+            <p>Position this window over the text you want to translate</p>
+            <p><strong>Click anywhere</strong> to capture</p>
+        </div>
+        <div id="status" class="status">Capturing...</div>
+    </div>
+
+    <script>
+        // Debug: Log when script loads
+        console.log('VisoLingua overlay script loaded');
+
+        // Check if Tauri is available
+        if (!window.__TAURI__) {
+            alert('ERROR: Tauri API not available! Running in wrong environment.');
+            console.error('Tauri API not found');
+        }
+
+        const { invoke } = window.__TAURI__.core;
+        const { getCurrentWindow } = window.__TAURI__.window;
+
+        let isCapturing = false;
+
+        console.log('Setting up click listener...');
+
+        document.getElementById('capture-area').addEventListener('click', async (e) => {
+            console.log('Click detected!');
+
+            if (isCapturing) {
+                console.log('Already capturing, ignoring click');
+                return;
+            }
+
+            isCapturing = true;
+            const status = document.getElementById('status');
+            status.classList.add('show');
+            status.textContent = 'Capturing screenshot...';
+            console.log('Starting capture...');
+
+            try {
+                const window = getCurrentWindow();
+                console.log('Got current window');
+
+                const position = await window.outerPosition();
+                console.log('Window position:', position);
+
+                const size = await window.outerSize();
+                console.log('Window size:', size);
+
+                // Get window bounds
+                const x = position.x;
+                const y = position.y;
+                const width = size.width;
+                const height = size.height;
+
+                // Capture screenshot
+                status.textContent = 'Processing...';
+                console.log('Calling capture_screenshot with bounds:', { x, y, width, height });
+
+                const imageBase64 = await invoke('capture_screenshot', {
+                    x: x + 10,  // Account for border
+                    y: y + 35,  // Account for title bar
+                    width: width - 20,
+                    height: height - 45
+                });
+                console.log('Screenshot captured, size:', imageBase64.length);
+
+                // Translate
+                status.textContent = 'Translating...';
+                console.log('Calling translate_image...');
+                const translation = await invoke('translate_image', { imageBase64 });
+                console.log('Translation received:', translation.substring(0, 50));
+
+                // Show result window
+                console.log('Showing result window...');
+                await invoke('show_result_window');
+
+                // Send translation to result window
+                console.log('Emitting translation result...');
+                window.__TAURI__.event.emit('translation-result', {
+                    translation: translation,
+                    imageBase64: imageBase64
+                });
+
+                console.log('Capture complete!');
+                isCapturing = false;
+                status.classList.remove('show');
+
+            } catch (error) {
+                console.error('ERROR occurred:', error);
+                alert('Error: ' + error);
+                status.textContent = `Error: ${error}`;
+                setTimeout(() => {
+                    status.classList.remove('show');
+                    isCapturing = false;
+                }, 3000);
+            }
+        });
+
+        console.log('Overlay ready!');
+
+        // Listen for "back to capture" event
+        window.__TAURI__.event.listen('back-to-capture', () => {
+            const status = document.getElementById('status');
+            status.classList.remove('show');
+            isCapturing = false;
+        });
+    </script>
+</body>
+</html>

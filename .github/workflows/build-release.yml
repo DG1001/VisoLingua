@@ -1,12 +1,8 @@
-name: Build and Release VisoLingua (DISABLED)
+name: Build Python Windows Binary
 
-# DISABLED: Automated builds trigger false-positive virus warnings
-# Users should build locally or run from source
+# Manual trigger only (no auto-build to avoid false-positive virus warnings)
 on:
-  # push:
-  #   tags:
-  #     - 'v*'  # Triggers on version tags like v1.0.0
-  workflow_dispatch:  # Manual trigger only (for testing)
+  workflow_dispatch:  # Manual trigger only
     inputs:
       version:
         description: 'Version tag (e.g., v1.0.0)'

@@ -1,0 +1,53 @@
+{
+  "productName": "VisoLingua",
+  "version": "1.0.0",
+  "identifier": "com.visolingua.app",
+  "build": {
+    "beforeDevCommand": "",
+    "beforeBuildCommand": "",
+    "frontendDist": "../src"
+  },
+  "bundle": {
+    "active": true,
+    "targets": [],
+    "icon": ["icons/icon.png"],
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
+    }
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "VisoLingua - Capture",
+        "label": "overlay",
+        "url": "overlay.html",
+        "width": 400,
+        "height": 300,
+        "resizable": true,
+        "decorations": true,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "skipTaskbar": false,
+        "visible": true
+      },
+      {
+        "title": "VisoLingua - Result",
+        "label": "result",
+        "url": "result.html",
+        "width": 600,
+        "height": 500,
+        "resizable": true,
+        "decorations": true,
+        "transparent": false,
+        "alwaysOnTop": false,
+        "skipTaskbar": false,
+        "visible": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  }
+}

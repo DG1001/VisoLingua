@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisoLingua - Result</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #1e1e1e;
+            color: #e0e0e0;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #ff4444;
+        }
+
+        .button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .button-primary {
+            background: #ff4444;
+            color: white;
+        }
+
+        .button-primary:hover {
+            background: #ff6666;
+        }
+
+        .button-secondary {
+            background: #333;
+            color: white;
+        }
+
+        .button-secondary:hover {
+            background: #444;
+        }
+
+        .translation-box {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff4444;
+        }
+
+        .translation-text {
+            font-size: 16px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .ai-section {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .ai-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        #ai-question {
+            flex: 1;
+            padding: 10px;
+            background: #1e1e1e;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 14px;
+        }
+
+        #ai-question:focus {
+            outline: none;
+            border-color: #ff4444;
+        }
+
+        .ai-response {
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 3px solid #4444ff;
+            display: none;
+        }
+
+        .ai-response.show {
+            display: block;
+        }
+
+        .ai-response-text {
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+
+        .spinner {
+            border: 3px solid #333;
+            border-top: 3px solid #ff4444;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .thumbnail {
+            max-width: 200px;
+            border-radius: 4px;
+            margin-top: 15px;
+            border: 1px solid #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Translation Result</h1>
+            <button class="button button-primary" onclick="backToCapture()">Back to Capture</button>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Translating...</p>
+        </div>
+
+        <div id="result-content" style="display: none;">
+            <div class="translation-box">
+                <h2 style="margin-bottom: 10px; font-size: 18px;">Translation:</h2>
+                <div id="translation-text" class="translation-text"></div>
+            </div>
+
+            <div class="ai-section">
+                <h3 style="margin-bottom: 15px; font-size: 16px;">🤖 Ask AI</h3>
+                <div class="ai-input-group">
+                    <input
+                        type="text"
+                        id="ai-question"
+                        placeholder="Ask a question about this translation..."
+                        onkeypress="handleKeyPress(event)"
+                    />
+                    <button class="button button-secondary" onclick="askAI()">Ask</button>
+                </div>
+                <div id="ai-response" class="ai-response">
+                    <div id="ai-response-text" class="ai-response-text"></div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="button button-secondary" onclick="copyTranslation()">Copy Translation</button>
+                <button class="button button-secondary" onclick="showSettings()">Settings</button>
+            </div>
+
+            <img id="thumbnail" class="thumbnail" style="display: none;" />
+        </div>
+    </div>
+
+    <script>
+        const { invoke } = window.__TAURI__.core;
+        const { getCurrentWindow } = window.__TAURI__.window;
+
+        let currentTranslation = '';
+        let currentImageBase64 = '';
+
+        // Listen for translation results
+        window.__TAURI__.event.listen('translation-result', (event) => {
+            const { translation, imageBase64 } = event.payload;
+            currentTranslation = translation;
+            currentImageBase64 = imageBase64;
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('result-content').style.display = 'block';
+            document.getElementById('translation-text').textContent = translation;
+
+            // Show thumbnail
+            if (imageBase64) {
+                const thumbnail = document.getElementById('thumbnail');
+                thumbnail.src = `data:image/png;base64,${imageBase64}`;
+                thumbnail.style.display = 'block';
+            }
+        });
+
+        async function askAI() {
+            const question = document.getElementById('ai-question').value.trim();
+            if (!question) return;
+
+            const responseDiv = document.getElementById('ai-response');
+            const responseText = document.getElementById('ai-response-text');
+
+            responseDiv.classList.add('show');
+            responseText.textContent = 'Thinking...';
+
+            try {
+                const answer = await invoke('ask_ai', {
+                    question: question,
+                    context: currentTranslation
+                });
+                responseText.textContent = answer;
+            } catch (error) {
+                responseText.textContent = `Error: ${error}`;
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                askAI();
+            }
+        }
+
+        async function backToCapture() {
+            await invoke('hide_result_window');
+            await invoke('show_overlay_window');
+            window.__TAURI__.event.emit('back-to-capture', {});
+
+            // Reset UI
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result-content').style.display = 'none';
+            document.getElementById('ai-response').classList.remove('show');
+            document.getElementById('ai-question').value = '';
+        }
+
+        function copyTranslation() {
+            navigator.clipboard.writeText(currentTranslation);
+            alert('Translation copied to clipboard!');
+        }
+
+        function showSettings() {
+            // TODO: Implement settings window
+            alert('Settings coming soon!');
+        }
+
+        // Handle Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                backToCapture();
+            }
+        });
+    </script>
+</body>
+</html>

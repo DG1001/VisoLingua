@@ -1,0 +1,14 @@
+{
+  "name": "visolingua-rust",
+  "version": "1.0.0",
+  "description": "Native translation overlay tool built with Rust and Tauri",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.1.0"
+  }
+}
