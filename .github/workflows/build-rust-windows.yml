@@ -34,6 +34,15 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: visolingua-rust/src-tauri
+          cache-on-failure: false
+          save-if: false
+
+      - name: Clean build cache
+        working-directory: visolingua-rust
+        run: |
+          if (Test-Path "src-tauri/target") {
+            Remove-Item -Recurse -Force "src-tauri/target"
+          }
 
       - name: Install npm dependencies
         working-directory: visolingua-rust
