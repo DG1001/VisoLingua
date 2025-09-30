@@ -24,11 +24,12 @@
     }
   },
   "app": {
+    "withGlobalTauri": true,
     "windows": [
       {
         "title": "VisoLingua - Capture",
         "label": "overlay",
-        "url": "overlay.html",
+        "url": "index.html",
         "width": 400,
         "height": 300,
         "resizable": true,
@@ -53,7 +54,11 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": null,
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["$RESOURCE/**"]
+      }
     }
   }
 }
