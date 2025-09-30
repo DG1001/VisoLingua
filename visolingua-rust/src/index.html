@@ -126,15 +126,24 @@
                 const width = size.width;
                 const height = size.height;
 
+                console.log('Raw position/size:', { x, y, width, height });
+
+                // For transparent windows, capture the entire window area
+                // No need to adjust for borders on transparent overlay
+                const captureX = x;
+                const captureY = y;
+                const captureWidth = width;
+                const captureHeight = height;
+
                 // Capture screenshot
                 status.textContent = 'Processing...';
-                console.log('Calling capture_screenshot with bounds:', { x, y, width, height });
+                console.log('Calling capture_screenshot with bounds:', { captureX, captureY, captureWidth, captureHeight });
 
                 const imageBase64 = await invoke('capture_screenshot', {
-                    x: x + 10,  // Account for border
-                    y: y + 35,  // Account for title bar
-                    width: width - 20,
-                    height: height - 45
+                    x: captureX,
+                    y: captureY,
+                    width: captureWidth,
+                    height: captureHeight
                 });
                 console.log('Screenshot captured, size:', imageBase64.length);
 
