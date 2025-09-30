@@ -210,11 +210,16 @@
         // Capture click handler
         document.getElementById('capture-area').addEventListener('click', async () => {
             try {
-                showStatus('Capturing screenshot...');
+                showStatus('Getting window bounds...');
 
                 // Get window bounds from backend
                 const bounds = await window.go.main.App.GetWindowBounds();
                 console.log('Window bounds:', bounds);
+                showStatus(`Bounds: ${bounds.x},${bounds.y} ${bounds.width}x${bounds.height}`);
+
+                await new Promise(r => setTimeout(r, 500)); // Brief pause to see status
+
+                showStatus('Capturing screenshot...');
 
                 // Capture screenshot of the window area
                 const imageBase64 = await window.go.main.App.CaptureScreenshot(
@@ -223,6 +228,9 @@
                     bounds.width,
                     bounds.height
                 );
+
+                showStatus(`Screenshot captured: ${imageBase64.length} chars`);
+                await new Promise(r => setTimeout(r, 500));
 
                 showStatus('Translating...');
 

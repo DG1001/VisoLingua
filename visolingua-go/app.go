@@ -35,25 +35,40 @@ func (a *App) startup(ctx context.Context) {
 
 // CaptureScreenshot captures a screenshot of the specified area
 func (a *App) CaptureScreenshot(x, y, width, height int) (string, error) {
+	fmt.Printf("CaptureScreenshot called: x=%d, y=%d, w=%d, h=%d\n", x, y, width, height)
+
 	bounds := image.Rect(x, y, x+width, y+height)
+	fmt.Printf("Capture bounds: %v\n", bounds)
 
 	img, err := screenshot.CaptureRect(bounds)
 	if err != nil {
+		fmt.Printf("Screenshot capture error: %v\n", err)
 		return "", fmt.Errorf("failed to capture screenshot: %w", err)
 	}
+
+	fmt.Printf("Screenshot captured, size: %dx%d\n", img.Bounds().Dx(), img.Bounds().Dy())
 
 	// Convert to base64
 	var buf bytes.Buffer
 	if err := png.Encode(&buf, img); err != nil {
+		fmt.Printf("PNG encode error: %v\n", err)
 		return "", fmt.Errorf("failed to encode image: %w", err)
 	}
 
+	fmt.Printf("Base64 encoded, length: %d bytes\n", buf.Len())
 	return base64.StdEncoding.EncodeToString(buf.Bytes()), nil
 }
 
 // TranslateImage sends the image to LLM for translation
 func (a *App) TranslateImage(imageBase64 string) (string, error) {
-	return a.translator.TranslateImage(imageBase64)
+	fmt.Printf("TranslateImage called, base64 length: %d\n", len(imageBase64))
+	result, err := a.translator.TranslateImage(imageBase64)
+	if err != nil {
+		fmt.Printf("Translation error: %v\n", err)
+		return "", err
+	}
+	fmt.Printf("Translation result: %s\n", result)
+	return result, nil
 }
 
 // AskAI asks a question about the translation
@@ -100,14 +115,19 @@ func (a *App) ShowResultWindow() {
 func (a *App) GetWindowBounds() (map[string]int, error) {
 	// Get window position
 	x, y := runtime.WindowGetPosition(a.ctx)
+	fmt.Printf("WindowGetPosition returned: x=%d, y=%d\n", x, y)
 
 	// Get window size
 	width, height := runtime.WindowGetSize(a.ctx)
+	fmt.Printf("WindowGetSize returned: width=%d, height=%d\n", width, height)
 
-	return map[string]int{
+	result := map[string]int{
 		"x":      x,
 		"y":      y,
 		"width":  width,
 		"height": height,
-	}, nil
+	}
+	fmt.Printf("Returning bounds: %v\n", result)
+
+	return result, nil
 }
