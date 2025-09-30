@@ -8,9 +8,8 @@
     "frontendDist": "../src"
   },
   "bundle": {
-    "active": true,
+    "active": false,
     "targets": [],
-    "icon": ["icons/icon.png"],
     "windows": {
       "certificateThumbprint": null,
       "digestAlgorithm": "sha256",
