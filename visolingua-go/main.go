@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
@@ -52,12 +53,19 @@ func main() {
 
 	// Create application options
 	log.Println("Creating Wails app...")
+
+	// Create sub-filesystem pointing to frontend/dist
+	distFS, err := fs.Sub(assets, "frontend/dist")
+	if err != nil {
+		log.Fatalf("Failed to create sub-filesystem: %v", err)
+	}
+
 	err = wails.Run(&options.App{
 		Title:  "VisoLingua",
 		Width:  600,
 		Height: 500,
 		AssetServer: &assetserver.Options{
-			Assets: assets,
+			Assets: distFS,
 		},
 		BackgroundColour: &options.RGBA{R: 26, G: 26, B: 26, A: 255},
 		OnStartup:        app.startup,
