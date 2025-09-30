@@ -1,0 +1,223 @@
+name: Build Go Windows Binary
+
+# Manual trigger only
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v1.0.0)'
+        required: false
+        default: 'latest'
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Install Wails
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+
+      - name: Verify Wails installation
+        run: |
+          wails version
+          Write-Host "✅ Wails CLI installed"
+
+      - name: Build Wails application
+        working-directory: visolingua-go
+        run: wails build
+
+      - name: Verify build
+        working-directory: visolingua-go
+        run: |
+          if (Test-Path "build/bin/visolingua.exe") {
+            Write-Host "✅ Build successful!"
+            $size = (Get-Item "build/bin/visolingua.exe").Length / 1MB
+            Write-Host "📏 Binary size: $($size.ToString('F1')) MB"
+          } else {
+            Write-Host "❌ Build failed - executable not found"
+            exit 1
+          }
+
+          # Check for NSIS installer
+          $installer = Get-ChildItem -Path "build/bin" -Filter "*.exe" -Exclude "visolingua.exe" -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "*installer*" -or $_.Name -like "*setup*" } | Select-Object -First 1
+          if ($installer) {
+            Write-Host "✅ Installer found: $($installer.Name)"
+            $size = $installer.Length / 1MB
+            Write-Host "📏 Installer size: $($size.ToString('F1')) MB"
+          } else {
+            Write-Host "⚠️ No installer found"
+          }
+
+      - name: Create portable package
+        working-directory: visolingua-go
+        run: |
+          # Create portable directory
+          $portableDir = "VisoLingua-Go-Portable"
+          New-Item -ItemType Directory -Path $portableDir -Force
+
+          # Copy files
+          Copy-Item "build/bin/visolingua.exe" "$portableDir/"
+          Copy-Item "../README.md" "$portableDir/" -ErrorAction SilentlyContinue
+
+          # Create config template
+          $configDir = "$portableDir/config"
+          New-Item -ItemType Directory -Path $configDir -Force
+
+          @"
+          # VisoLingua Configuration
+          # Edit this file with your API keys
+
+          [llm]
+          provider = "gemini"  # Options: gemini, openai, ollama
+          gemini_model = "gemini-2.0-flash-exp"
+          openai_model = "gpt-4o-mini"
+          ollama_url = "http://localhost:11434"
+          ollama_model = "llava"
+
+          [api_keys]
+          gemini = ""  # Get from: https://aistudio.google.com/
+          openai = ""  # Get from: https://platform.openai.com/
+
+          [translation]
+          target_language = "German"
+
+          [ui]
+          overlay_transparency = "0.3"
+          "@ | Out-File -FilePath "$configDir/config_sample.toml" -Encoding UTF8
+
+          # Create launcher script
+          @"
+          @echo off
+          echo Starting VisoLingua (Go)...
+          echo.
+          echo Configuration file location:
+          echo %APPDATA%\visolingua\config.toml
+          echo.
+
+          REM Check if config exists
+          if not exist "%APPDATA%\visolingua\config.toml" (
+              echo First run detected - creating default config...
+              mkdir "%APPDATA%\visolingua" 2>nul
+              copy "config\config_sample.toml" "%APPDATA%\visolingua\config.toml"
+              echo.
+              echo IMPORTANT: Edit the config file and add your API keys:
+              echo %APPDATA%\visolingua\config.toml
+              echo.
+              pause
+          )
+
+          start "" visolingua.exe
+          "@ | Out-File -FilePath "$portableDir/Start-VisoLingua.bat" -Encoding ASCII
+
+          # Create README
+          @"
+          # VisoLingua Go - Windows Portable
+
+          ## Quick Start
+
+          1. Run "Start-VisoLingua.bat"
+          2. On first run, edit the config file that opens
+          3. Add your API key (Gemini or OpenAI)
+          4. Save and restart
+
+          ## Configuration
+
+          Config file location: %APPDATA%\visolingua\config.toml
+
+          Get API keys:
+          - Gemini (Free): https://aistudio.google.com/
+          - OpenAI (Paid): https://platform.openai.com/
+
+          ## Usage
+
+          1. Position the overlay window over text
+          2. Click inside to capture and translate
+          3. View results in the popup window
+          4. Use "Ask AI" to ask questions about translations
+
+          ## System Requirements
+
+          - Windows 10 or later
+          - WebView2 Runtime (usually pre-installed on Windows 11)
+
+          If WebView2 is missing, download from:
+          https://go.microsoft.com/fwlink/p/?LinkId=2124703
+
+          ## Size Comparison
+
+          - Go version: ~12-15 MB
+          - Rust version: ~8-10 MB
+          - Python version: ~50 MB
+
+          Built with Go + Wails for native performance!
+          "@ | Out-File -FilePath "$portableDir/README.txt" -Encoding UTF8
+
+          Write-Host "✅ Portable package created: $portableDir"
+
+      - name: Create ZIP archive
+        working-directory: visolingua-go
+        run: |
+          Compress-Archive -Path "VisoLingua-Go-Portable" -DestinationPath "VisoLingua-Go-Windows.zip"
+          $size = (Get-Item "VisoLingua-Go-Windows.zip").Length / 1MB
+          Write-Host "✅ ZIP archive created: $($size.ToString('F1')) MB"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: VisoLingua-Go-Windows
+          path: |
+            visolingua-go/VisoLingua-Go-Windows.zip
+            visolingua-go/build/bin/visolingua.exe
+
+      - name: Create Release
+        if: github.event.inputs.version != 'latest'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: go-${{ github.event.inputs.version }}
+          name: VisoLingua Go ${{ github.event.inputs.version }}
+          draft: false
+          prerelease: false
+          body: |
+            # VisoLingua Go ${{ github.event.inputs.version }}
+
+            ## 🚀 Go + Wails Version
+
+            ### ✨ Advantages:
+            - **70% smaller** than Python version (~12 MB vs ~50 MB)
+            - **Native performance** - no Python runtime needed
+            - **Go simplicity** - easier to modify than Rust
+            - **Same features** - Screenshot, Translation, Ask AI
+
+            ### 📦 Downloads:
+            - **VisoLingua-Go-Windows.zip**: Complete portable package (recommended)
+            - **visolingua.exe**: Standalone binary
+
+            ### 🔧 Quick Setup:
+            1. Download and extract ZIP
+            2. Run "Start-VisoLingua.bat"
+            3. Add API key in config file
+            4. Restart and use!
+
+            ### 📋 Requirements:
+            - Windows 10 or later
+            - WebView2 Runtime (pre-installed on Win 11)
+
+            ### 🔑 Get API Keys:
+            - **Gemini** (Free): https://aistudio.google.com/
+            - **OpenAI** (Paid): https://platform.openai.com/
+          files: |
+            visolingua-go/VisoLingua-Go-Windows.zip
+            visolingua-go/build/bin/visolingua.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
