@@ -8,3 +8,7 @@ config/config.ini
 Log/
 build/VisoLingua/
 dist/
+
+# Exception: Keep Go frontend files
+!visolingua-go/frontend/dist/
+!visolingua-go/frontend/dist/*
