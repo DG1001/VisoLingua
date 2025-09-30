@@ -23,10 +23,25 @@ func main() {
 	if err == nil {
 		log.SetOutput(logFile)
 		defer logFile.Close()
+	} else {
+		// If logging fails, try stderr
+		log.SetOutput(os.Stderr)
 	}
 
 	log.Println("=== VisoLingua Go Starting ===")
 	log.Println("Log file:", logPath)
+	log.Printf("Working directory: %s", getCurrentDir())
+
+	// Check embedded assets
+	entries, err := assets.ReadDir("frontend/dist")
+	if err != nil {
+		log.Printf("ERROR: Failed to read embedded assets: %v", err)
+		log.Fatal(err)
+	}
+	log.Printf("Found %d embedded files:", len(entries))
+	for _, entry := range entries {
+		log.Printf("  - %s", entry.Name())
+	}
 
 	// Create application instance
 	app := NewApp()
@@ -62,4 +77,9 @@ func main() {
 	}
 
 	log.Println("App exited normally")
+}
+
+func getCurrentDir() string {
+	dir, _ := os.Getwd()
+	return dir
 }
