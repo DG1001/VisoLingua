@@ -116,17 +116,21 @@
 
                 const position = await window.outerPosition();
                 console.log('Window position:', position);
+                console.log('Position type:', typeof position);
+                console.log('Position keys:', Object.keys(position));
 
                 const size = await window.outerSize();
                 console.log('Window size:', size);
+                console.log('Size type:', typeof size);
+                console.log('Size keys:', Object.keys(size));
 
-                // Get window bounds
-                const x = position.x;
-                const y = position.y;
-                const width = size.width;
-                const height = size.height;
+                // Get window bounds - check different possible property names
+                const x = position.x ?? position.X ?? position[0];
+                const y = position.y ?? position.Y ?? position[1];
+                const width = size.width ?? size.w ?? size.Width ?? size[0];
+                const height = size.height ?? size.h ?? size.Height ?? size[1];
 
-                console.log('Raw position/size:', { x, y, width, height });
+                console.log('Extracted values:', { x, y, width, height });
 
                 // For transparent windows, capture the entire window area
                 // No need to adjust for borders on transparent overlay
