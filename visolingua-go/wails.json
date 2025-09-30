@@ -1,0 +1,23 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "visolingua",
+  "outputfilename": "visolingua",
+  "frontend:install": "",
+  "frontend:build": "",
+  "frontend:dev:watcher": "",
+  "frontend:dev:serverUrl": "",
+  "author": {
+    "name": "VisoLingua Contributors",
+    "email": ""
+  },
+  "info": {
+    "companyName": "VisoLingua",
+    "productName": "VisoLingua",
+    "productVersion": "1.0.0",
+    "copyright": "Copyright........",
+    "comments": "Native translation overlay tool"
+  },
+  "nsisType": "multiple",
+  "obfuscated": false,
+  "wailsjsdir": "./frontend"
+}
