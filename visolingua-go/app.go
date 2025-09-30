@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"image"
 	"image/png"
 	"bytes"
 
@@ -34,10 +35,7 @@ func (a *App) startup(ctx context.Context) {
 
 // CaptureScreenshot captures a screenshot of the specified area
 func (a *App) CaptureScreenshot(x, y, width, height int) (string, error) {
-	bounds := screenshot.Rect{
-		Min: screenshot.Point{X: x, Y: y},
-		Max: screenshot.Point{X: x + width, Y: y + height},
-	}
+	bounds := image.Rect(x, y, x+width, y+height)
 
 	img, err := screenshot.CaptureRect(bounds)
 	if err != nil {
