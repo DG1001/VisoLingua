@@ -95,3 +95,19 @@ func (a *App) SaveConfig(config ConfigData) error {
 func (a *App) ShowResultWindow() {
 	runtime.WindowShow(a.ctx)
 }
+
+// GetWindowBounds returns the current window position and size
+func (a *App) GetWindowBounds() (map[string]int, error) {
+	// Get window position
+	x, y := runtime.WindowGetPosition(a.ctx)
+
+	// Get window size
+	width, height := runtime.WindowGetSize(a.ctx)
+
+	return map[string]int{
+		"x":      x,
+		"y":      y,
+		"width":  width,
+		"height": height,
+	}, nil
+}
