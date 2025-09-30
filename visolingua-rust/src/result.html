@@ -204,12 +204,13 @@
     <script>
         const { invoke } = window.__TAURI__.core;
         const { getCurrentWindow } = window.__TAURI__.window;
+        const { emit, listen } = window.__TAURI__.event;
 
         let currentTranslation = '';
         let currentImageBase64 = '';
 
         // Listen for translation results
-        window.__TAURI__.event.listen('translation-result', (event) => {
+        listen('translation-result', (event) => {
             const { translation, imageBase64 } = event.payload;
             currentTranslation = translation;
             currentImageBase64 = imageBase64;
@@ -256,7 +257,7 @@
         async function backToCapture() {
             await invoke('hide_result_window');
             await invoke('show_overlay_window');
-            window.__TAURI__.event.emit('back-to-capture', {});
+            await emit('back-to-capture', {});
 
             // Reset UI
             document.getElementById('loading').style.display = 'block';

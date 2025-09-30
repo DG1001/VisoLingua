@@ -90,6 +90,7 @@
 
         const { invoke } = window.__TAURI__.core;
         const { getCurrentWindow } = window.__TAURI__.window;
+        const { emit, listen } = window.__TAURI__.event;
 
         let isCapturing = false;
 
@@ -149,7 +150,7 @@
 
                 // Send translation to result window
                 console.log('Emitting translation result...');
-                window.__TAURI__.event.emit('translation-result', {
+                await emit('translation-result', {
                     translation: translation,
                     imageBase64: imageBase64
                 });
@@ -172,7 +173,7 @@
         console.log('Overlay ready!');
 
         // Listen for "back to capture" event
-        window.__TAURI__.event.listen('back-to-capture', () => {
+        listen('back-to-capture', () => {
             const status = document.getElementById('status');
             status.classList.remove('show');
             isCapturing = false;
