@@ -25,6 +25,14 @@
   },
   "app": {
     "withGlobalTauri": true,
+    "security": {
+      "csp": null,
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["$RESOURCE/**"]
+      },
+      "capabilities": ["default"]
+    },
     "windows": [
       {
         "title": "VisoLingua - Capture",
@@ -52,13 +60,6 @@
         "skipTaskbar": false,
         "visible": false
       }
-    ],
-    "security": {
-      "csp": null,
-      "assetProtocol": {
-        "enable": true,
-        "scope": ["$RESOURCE/**"]
-      }
-    }
+    ]
   }
 }
