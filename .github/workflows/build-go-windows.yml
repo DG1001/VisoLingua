@@ -39,7 +39,7 @@ jobs:
 
       - name: Build Wails application
         working-directory: visolingua-go
-        run: wails build
+        run: wails build -v 2
 
       - name: Verify build
         working-directory: visolingua-go

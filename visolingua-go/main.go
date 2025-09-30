@@ -10,35 +10,32 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
 )
 
-//go:embed all:frontend/dist
+//go:embed frontend/dist
 var assets embed.FS
 
 func main() {
 	// Create application instance
 	app := NewApp()
 
-	// Create overlay window options
-	overlayOpts := &options.App{
-		Title:  "VisoLingua - Capture",
-		Width:  400,
-		Height: 300,
+	// Create application options
+	err := wails.Run(&options.App{
+		Title:  "VisoLingua",
+		Width:  600,
+		Height: 500,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		BackgroundColour: &options.RGBA{R: 0, G: 0, B: 0, A: 0},
+		BackgroundColour: &options.RGBA{R: 26, G: 26, B: 26, A: 255},
 		OnStartup:        app.startup,
 		Bind: []interface{}{
 			app,
 		},
 		Windows: &windows.Options{
-			WebviewIsTransparent: true,
-			WindowIsTranslucent:  true,
-			BackdropType:         windows.Mica,
+			WebviewIsTransparent: false,
+			WindowIsTranslucent:  false,
 		},
-	}
+	})
 
-	// Create application with runtime
-	err := wails.Run(overlayOpts)
 	if err != nil {
 		log.Fatal(err)
 	}
