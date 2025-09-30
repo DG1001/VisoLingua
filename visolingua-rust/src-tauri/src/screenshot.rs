@@ -34,6 +34,14 @@ pub async fn capture_area(x: i32, y: i32, width: u32, height: u32) -> Result<Str
         .write_to(&mut std::io::Cursor::new(&mut png_bytes), image::ImageFormat::Png)
         .context("Failed to encode image as PNG")?;
 
+    // Debug: Save screenshot to temp folder for verification
+    if let Some(temp_dir) = std::env::temp_dir().to_str() {
+        let debug_path = format!("{}/visolingua_last_capture.png", temp_dir);
+        let _ = cropped.save(&debug_path);
+        println!("Screenshot saved to: {}", debug_path);
+        println!("Captured: x={}, y={}, w={}, h={}, size={}kb", x, y, width, height, png_bytes.len()/1024);
+    }
+
     let base64_string = STANDARD.encode(&png_bytes);
     Ok(base64_string)
 }
