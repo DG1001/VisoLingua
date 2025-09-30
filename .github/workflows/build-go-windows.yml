@@ -33,6 +33,10 @@ jobs:
           wails version
           Write-Host "✅ Wails CLI installed"
 
+      - name: Download Go dependencies
+        working-directory: visolingua-go
+        run: go mod download
+
       - name: Build Wails application
         working-directory: visolingua-go
         run: wails build
