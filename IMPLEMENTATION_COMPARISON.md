@@ -161,20 +161,28 @@ build/bin/
 
 ## GitHub Actions CI/CD
 
-Both Rust and Python have GitHub Actions workflows:
+All versions have GitHub Actions workflows:
 
-**Python:**
+**Automated Releases (All Versions):**
+- File: `.github/workflows/release.yml`
+- Trigger: **Automatic on version tags** (e.g., `v1.0.0`)
+- Output: GitHub Release with ZIP + binaries
+- Usage: `git tag v1.0.0 && git push origin v1.0.0`
+
+**Python (Manual):**
 - File: `.github/workflows/build-release.yml`
 - Trigger: Manual only
 - Output: PyInstaller .exe
 
-**Rust:**
+**Rust (Manual):**
 - File: `.github/workflows/build-rust-windows.yml`
 - Trigger: Manual only
 - Output: Native .exe + MSI installer
 
-**Go:**
-- Not yet implemented (can add if needed)
+**Go (Manual):**
+- File: `.github/workflows/build-go-windows.yml`
+- Trigger: Manual only
+- Output: Wails .exe (not working - screen capture issue)
 
 ## Next Steps
 

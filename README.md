@@ -19,8 +19,12 @@ VisoLingua is available in **three implementations** with different trade-offs:
 | Version | Status | Binary Size | Startup | Best For | Link |
 |---------|--------|-------------|---------|----------|------|
 | **🐍 Python** | ✅ **Working** | ~50 MB | ~2-3s | Development, quick iteration | *(this directory)* |
-| **🦀 Rust** | ✅ **Working** | **~8 MB** | **~0.5s** | **Production use** ⭐ | [visolingua-rust/](visolingua-rust/) |
+| **🦀 Rust** | ✅ **Working** | **~8 MB** | **~0.5s** | **Production use** ⭐ | [visolingua-rust/](visolingua-rust/) • [Releases](../../releases) |
 | **🐹 Go** | ⚠️ **Broken** | ~12 MB | ~1s | Not recommended | [visolingua-go/](visolingua-go/) |
+
+### 📦 Download Pre-built Binaries
+
+**[→ Download Latest Release](../../releases/latest)** - Get the Rust version (recommended)
 
 ### Quick Recommendations
 

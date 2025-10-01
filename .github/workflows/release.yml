@@ -1,0 +1,237 @@
+name: Automated Release Build
+
+# Triggers automatically when you push a version tag
+on:
+  push:
+    tags:
+      - 'v*'  # Triggers on tags like v1.0.0, v1.2.3, etc.
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: version
+        run: |
+          $TAG = "${{ github.ref_name }}"
+          Write-Host "Tag: $TAG"
+          echo "VERSION=$TAG" >> $env:GITHUB_OUTPUT
+        shell: pwsh
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: visolingua-rust/src-tauri
+          cache-on-failure: false
+
+      - name: Install npm dependencies
+        working-directory: visolingua-rust
+        run: npm install
+
+      - name: Build Tauri application
+        working-directory: visolingua-rust
+        run: npm run tauri build
+
+      - name: Verify build
+        working-directory: visolingua-rust
+        run: |
+          if (Test-Path "src-tauri/target/release/visolingua.exe") {
+            Write-Host "✅ Build successful!"
+            $size = (Get-Item "src-tauri/target/release/visolingua.exe").Length / 1MB
+            Write-Host "📏 Binary size: $($size.ToString('F1')) MB"
+          } else {
+            Write-Host "❌ Build failed - executable not found"
+            exit 1
+          }
+
+      - name: Create portable package
+        working-directory: visolingua-rust
+        run: |
+          # Create portable directory
+          $portableDir = "VisoLingua-Windows-${{ steps.version.outputs.VERSION }}"
+          New-Item -ItemType Directory -Path $portableDir -Force
+
+          # Copy files
+          Copy-Item "src-tauri/target/release/visolingua.exe" "$portableDir/"
+          Copy-Item "README.md" "$portableDir/" -ErrorAction SilentlyContinue
+          Copy-Item "SETUP.md" "$portableDir/" -ErrorAction SilentlyContinue
+
+          # Create config template
+          $configDir = "$portableDir/config"
+          New-Item -ItemType Directory -Path $configDir -Force
+
+          @"
+          # VisoLingua Configuration
+          # Edit this file with your API keys
+
+          [llm]
+          provider = "gemini"  # Options: gemini, openai, ollama
+          gemini_model = "gemini-2.0-flash-exp"
+          openai_model = "gpt-4o-mini"
+          ollama_url = "http://localhost:11434"
+          ollama_model = "llava"
+
+          [api_keys]
+          gemini = ""  # Get from: https://aistudio.google.com/
+          openai = ""  # Get from: https://platform.openai.com/
+
+          [translation]
+          target_language = "German"
+
+          [ui]
+          overlay_transparency = "0.3"
+          "@ | Out-File -FilePath "$configDir/config_sample.toml" -Encoding UTF8
+
+          # Create launcher script
+          @"
+          @echo off
+          echo Starting VisoLingua ${{ steps.version.outputs.VERSION }}...
+          echo.
+          echo Configuration file location:
+          echo %APPDATA%\visolingua\config.toml
+          echo.
+
+          REM Check if config exists
+          if not exist "%APPDATA%\visolingua\config.toml" (
+              echo First run detected - creating default config...
+              mkdir "%APPDATA%\visolingua" 2>nul
+              copy "config\config_sample.toml" "%APPDATA%\visolingua\config.toml"
+              echo.
+              echo IMPORTANT: Edit the config file and add your API keys:
+              echo %APPDATA%\visolingua\config.toml
+              echo.
+              pause
+          )
+
+          start "" visolingua.exe
+          "@ | Out-File -FilePath "$portableDir/Start-VisoLingua.bat" -Encoding ASCII
+
+          # Create README
+          @"
+          # VisoLingua ${{ steps.version.outputs.VERSION }} - Windows Edition
+
+          ## Quick Start
+
+          1. Run "Start-VisoLingua.bat"
+          2. On first run, edit the config file and add your API key
+          3. Save and restart
+
+          ## Configuration
+
+          Config file: %APPDATA%\visolingua\config.toml
+
+          Get API keys:
+          - Gemini (Free): https://aistudio.google.com/
+          - OpenAI (Paid): https://platform.openai.com/
+
+          ## Usage
+
+          1. Position the red overlay window over text
+          2. Click inside to capture and translate
+          3. View results in the popup window
+          4. Use "Ask AI" for follow-up questions
+
+          ## Requirements
+
+          - Windows 10 or later
+          - WebView2 Runtime (pre-installed on Windows 11)
+
+          If WebView2 is missing:
+          https://go.microsoft.com/fwlink/p/?LinkId=2124703
+
+          ## Version Information
+
+          - Version: ${{ steps.version.outputs.VERSION }}
+          - Binary size: ~8-10 MB
+          - Built with: Rust + Tauri
+          "@ | Out-File -FilePath "$portableDir/README.txt" -Encoding UTF8
+
+          Write-Host "✅ Portable package created: $portableDir"
+
+      - name: Create ZIP archive
+        working-directory: visolingua-rust
+        run: |
+          $zipName = "VisoLingua-Windows-${{ steps.version.outputs.VERSION }}.zip"
+          Compress-Archive -Path "VisoLingua-Windows-${{ steps.version.outputs.VERSION }}" -DestinationPath $zipName
+          $size = (Get-Item $zipName).Length / 1MB
+          Write-Host "✅ ZIP created: $zipName ($($size.ToString('F1')) MB)"
+          echo "ZIP_NAME=$zipName" >> $env:GITHUB_OUTPUT
+        id: zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.VERSION }}
+          name: VisoLingua ${{ steps.version.outputs.VERSION }}
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.VERSION, '-') }}
+          body: |
+            # VisoLingua ${{ steps.version.outputs.VERSION }}
+
+            ## 🚀 Native Rust + Tauri Version
+
+            ### ✨ Features:
+            - 📸 **Transparent overlay** - Position over any text
+            - 🌏 **Multi-language translation** - Optimized for Chinese
+            - 🤖 **Ask AI** - Ask follow-up questions about translations
+            - 💾 **Translation history** - Review past translations
+            - ⚙️ **LLM support** - Gemini, OpenAI, or local Ollama
+
+            ### 🎯 Advantages over Python version:
+            - **80% smaller** (~8 MB vs ~50 MB)
+            - **Native performance** - No Python runtime needed
+            - **No antivirus issues** - Native compilation
+            - **Faster startup** - ~0.5s vs 2-3s
+
+            ### 📦 Download:
+            - **VisoLingua-Windows-${{ steps.version.outputs.VERSION }}.zip** - Complete portable package (recommended)
+            - **visolingua.exe** - Standalone binary only
+
+            ### 🔧 Quick Setup:
+            1. Download and extract ZIP
+            2. Run `Start-VisoLingua.bat`
+            3. Add your API key when prompted
+            4. Start translating!
+
+            ### 📋 Requirements:
+            - Windows 10 or later
+            - WebView2 Runtime (pre-installed on Windows 11)
+
+            ### 🔑 Get API Keys (Free):
+            - **Gemini**: https://aistudio.google.com/
+            - **OpenAI**: https://platform.openai.com/
+
+            ---
+
+            **Note**: The Go version is experimental and not recommended. Use Rust or Python versions.
+          files: |
+            visolingua-rust/VisoLingua-Windows-${{ steps.version.outputs.VERSION }}.zip
+            visolingua-rust/src-tauri/target/release/visolingua.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: VisoLingua-${{ steps.version.outputs.VERSION }}-artifacts
+          path: |
+            visolingua-rust/VisoLingua-Windows-${{ steps.version.outputs.VERSION }}.zip
+            visolingua-rust/src-tauri/target/release/visolingua.exe
+          retention-days: 90
