@@ -50,11 +50,14 @@ type ConfigData struct {
 // LoadConfig loads configuration from file or creates default
 func LoadConfig() (*Config, error) {
 	configPath := getConfigPath()
+	println("Loading config from:", configPath)
 
 	// Create default config if doesn't exist
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		println("Config file not found, creating default")
 		config := defaultConfig()
 		if err := config.Save(); err != nil {
+			println("Failed to save default config:", err.Error())
 			return nil, err
 		}
 		return config, nil
@@ -62,8 +65,13 @@ func LoadConfig() (*Config, error) {
 
 	var config Config
 	if _, err := toml.DecodeFile(configPath, &config); err != nil {
+		println("Failed to parse config:", err.Error())
 		return nil, err
 	}
+
+	println("Config loaded successfully")
+	println("  Provider:", config.LLM.Provider)
+	println("  Gemini API key length:", len(config.APIKeys.Gemini))
 
 	return &config, nil
 }
@@ -89,6 +97,13 @@ func (c *Config) Save() error {
 }
 
 func getConfigPath() string {
+	// Use the same location as Rust version for consistency
+	appData := os.Getenv("APPDATA")
+	if appData != "" {
+		// Windows
+		return filepath.Join(appData, "visolingua", "config.toml")
+	}
+	// Linux/Mac fallback
 	home, _ := os.UserHomeDir()
 	return filepath.Join(home, ".config", "visolingua", "config.toml")
 }
