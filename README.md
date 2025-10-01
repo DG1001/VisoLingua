@@ -12,6 +12,12 @@ A user-friendly desktop tool for live translation with transparent overlay windo
 ![Translation](screen_translate.png)
 *Result window with translated text output*
 
+### Rust Version in Action - Dual Window Display
+![Scan and translate](screen_visolingua_rust.png)
+*Translating an electron microscope manual from English to German - capture window (top) and result window (bottom) shown simultaneously*
+
+
+
 ## 🚀 Available Implementations
 
 VisoLingua is available in **three implementations** with different trade-offs:
