@@ -6,7 +6,7 @@ use std::fs::OpenOptions;
 use std::io::Write;
 
 fn log_to_file(msg: &str) {
-    if let Ok(temp_dir) = std::env::temp_dir().to_str() {
+    if let Some(temp_dir) = std::env::temp_dir().to_str() {
         let log_path = format!("{}/visolingua-rust-debug.log", temp_dir);
         if let Ok(mut file) = OpenOptions::new().create(true).append(true).open(log_path) {
             let _ = writeln!(file, "{}", msg);
