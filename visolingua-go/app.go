@@ -48,6 +48,15 @@ func (a *App) CaptureScreenshot(x, y, width, height int) (string, error) {
 
 	fmt.Printf("Screenshot captured, size: %dx%d\n", img.Bounds().Dx(), img.Bounds().Dy())
 
+	// Save debug image to temp directory
+	tempDir := os.TempDir()
+	debugPath := filepath.Join(tempDir, "visolingua-go-capture.png")
+	if debugFile, err := os.Create(debugPath); err == nil {
+		png.Encode(debugFile, img)
+		debugFile.Close()
+		fmt.Printf("Debug: Screenshot saved to %s\n", debugPath)
+	}
+
 	// Convert to base64
 	var buf bytes.Buffer
 	if err := png.Encode(&buf, img); err != nil {
