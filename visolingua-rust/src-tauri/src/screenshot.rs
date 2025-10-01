@@ -23,11 +23,16 @@ pub async fn capture_area(x: i32, y: i32, width: u32, height: u32) -> Result<Str
     let monitors = Monitor::all().context("Failed to get monitors")?;
     log_to_file(&format!("Found {} monitors", monitors.len()));
 
-    // Find the monitor containing this area (use primary for now)
+    // Find the monitor that contains the window position
     let monitor = monitors
         .into_iter()
-        .next()
-        .context("No monitors found")?;
+        .find(|m| {
+            let contains = x >= m.x() && x < m.x() + m.width() as i32 &&
+                          y >= m.y() && y < m.y() + m.height() as i32;
+            log_to_file(&format!("Monitor at ({}, {}): contains window? {}", m.x(), m.y(), contains));
+            contains
+        })
+        .context("No monitor found containing the window position")?;
 
     log_to_file(&format!("Monitor: x={}, y={}, width={}, height={}",
              monitor.x(), monitor.y(), monitor.width(), monitor.height()));
