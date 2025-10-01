@@ -1,117 +1,117 @@
 # VisoLingua Deployment Guide
 
-## 📦 Antwort auf deine Frage: Config-Datei
+## 📦 Answer to Your Question: Config File
 
-### ✅ **NEU: Automatische config.ini Erstellung**
+### ✅ **NEW: Automatic config.ini Creation**
 
-Nach dem Update erstellt VisoLingua automatisch eine `config.ini` **neben der EXE-Datei**, wenn keine vorhanden ist.
+After the update, VisoLingua automatically creates a `config.ini` **next to the EXE file** if none exists.
 
-### 🎯 **Zwei Deployment-Optionen:**
+### 🎯 **Two Deployment Options:**
 
-## Option 1: Nur EXE (Minimalist)
+## Option 1: EXE Only (Minimalist)
 ```
-# Einfach kopieren:
+# Simply copy:
 VisoLingua.exe
 
-# Was passiert:
-# ✅ Beim ersten Start wird config.ini automatisch erstellt
-# ✅ Funktioniert sofort (mit Standard-Einstellungen)
-# ⚠️  Benutzer muss API-Keys in Settings eingeben
+# What happens:
+# ✅ On first start, config.ini is automatically created
+# ✅ Works immediately (with default settings)
+# ⚠️  User must enter API keys in Settings
 ```
 
-## Option 2: Portable Package (Empfohlen)
+## Option 2: Portable Package (Recommended)
 ```batch
-# Vollständiges Package erstellen:
+# Create complete package:
 create_portable.bat
 
-# Ergebnis: VisoLingua-Portable/ Ordner mit:
+# Result: VisoLingua-Portable/ folder with:
 # ✅ VisoLingua.exe
-# ✅ config.ini (vorkonfiguriert)
+# ✅ config.ini (pre-configured)
 # ✅ Start VisoLingua.bat (Launcher)
 # ✅ Create Desktop Shortcut.bat
 # ✅ PORTABLE_README.txt
-# ✅ Dokumentation
+# ✅ Documentation
 ```
 
-## 🔧 **Technische Details:**
+## 🔧 **Technical Details:**
 
-### Config-Speicherort:
-- **Als EXE**: `config.ini` im gleichen Ordner wie `VisoLingua.exe`
-- **Als Python**: `config/config.ini` (wie bisher)
+### Config Location:
+- **As EXE**: `config.ini` in same folder as `VisoLingua.exe`
+- **As Python**: `config/config.ini` (as before)
 
-### Erste Verwendung:
-1. **EXE starten** → `config.ini` wird automatisch erstellt
-2. **Settings öffnen** → API-Keys eingeben
-3. **Fertig!** → App ist konfiguriert
+### First Use:
+1. **Start EXE** → `config.ini` is automatically created
+2. **Open Settings** → Enter API keys
+3. **Done!** → App is configured
 
-## 🚀 **Empfohlener Workflow:**
+## 🚀 **Recommended Workflow:**
 
-### Für dich (Entwickler):
+### For You (Developer):
 ```batch
-# 1. Neue EXE mit Config-Fix bauen
+# 1. Build new EXE with config fix
 python build_exe.py
 
-# 2. Portable Package erstellen
+# 2. Create portable package
 create_portable.bat
 
-# 3. Testen
+# 3. Test
 cd VisoLingua-Portable
 "Start VisoLingua.bat"
 ```
 
-### Für Endbenutzer:
+### For End Users:
 ```batch
-# Option A: Nur EXE
-VisoLingua.exe  # → config.ini wird automatisch erstellt
+# Option A: EXE only
+VisoLingua.exe  # → config.ini is automatically created
 
-# Option B: Portable Package (empfohlen)
-"Start VisoLingua.bat"  # → Alles vorbereitet
+# Option B: Portable package (recommended)
+"Start VisoLingua.bat"  # → Everything prepared
 ```
 
-## 📋 **Deployment-Szenarien:**
+## 📋 **Deployment Scenarios:**
 
-### 🎯 **Szenario 1: Einfache Distribution**
-**Was weitergeben**: Nur `VisoLingua.exe`
-- ✅ **Vorteil**: Einzelne Datei
-- ✅ **Config**: Wird automatisch erstellt
-- ⚠️  **Setup**: Benutzer muss API-Keys selbst eingeben
+### 🎯 **Scenario 1: Simple Distribution**
+**What to share**: Only `VisoLingua.exe`
+- ✅ **Advantage**: Single file
+- ✅ **Config**: Automatically created
+- ⚠️  **Setup**: User must enter API keys themselves
 
-### 🎯 **Szenario 2: Benutzerfreundlich**
-**Was weitergeben**: Ganzer `VisoLingua-Portable/` Ordner
-- ✅ **Vorteil**: Sofort startklar
+### 🎯 **Scenario 2: User-Friendly**
+**What to share**: Entire `VisoLingua-Portable/` folder
+- ✅ **Advantage**: Ready to start immediately
 - ✅ **Launcher**: "Start VisoLingua.bat"
-- ✅ **Anleitung**: PORTABLE_README.txt
-- ✅ **Shortcuts**: Desktop-Icon Creator
+- ✅ **Instructions**: PORTABLE_README.txt
+- ✅ **Shortcuts**: Desktop icon creator
 
-### 🎯 **Szenario 3: Mit vorkonfigurierten API-Keys**
+### 🎯 **Scenario 3: With Pre-configured API Keys**
 ```batch
-# 1. Portable Package erstellen
+# 1. Create portable package
 create_portable.bat
 
-# 2. config.ini bearbeiten (API-Keys eintragen)
+# 2. Edit config.ini (enter API keys)
 notepad VisoLingua-Portable\config.ini
 
-# 3. Verteilen → Sofort einsatzbereit!
+# 3. Distribute → Ready to use immediately!
 ```
 
-## 🛠️ **Nach dem Update:**
+## 🛠️ **After the Update:**
 
-Du musst die **EXE neu bauen**, damit die Config-Änderungen wirksam werden:
+You must **rebuild the EXE** for the config changes to take effect:
 
 ```batch
-# Wichtig: EXE neu bauen für Config-Fix!
+# Important: Rebuild EXE for config fix!
 python build_exe.py
 
-# Dann portable Package erstellen
+# Then create portable package
 create_portable.bat
 ```
 
-## 💡 **Antwort auf deine Frage:**
+## 💡 **Answer to Your Question:**
 
-> **"Wird automatisch eine ini angelegt?"**
+> **"Will an ini be created automatically?"**
 
-**✅ JA!** Nach dem Update:
-- EXE irgendwo ablegen → `config.ini` wird beim ersten Start automatisch neben der EXE erstellt
-- **ODER** das portable Package verwenden → `config.ini` ist bereits dabei
+**✅ YES!** After the update:
+- Place EXE anywhere → `config.ini` is automatically created next to the EXE on first start
+- **OR** use the portable package → `config.ini` is already included
 
-**Empfehlung**: Portable Package verwenden für beste Benutzererfahrung! 🎉
+**Recommendation**: Use portable package for best user experience! 🎉

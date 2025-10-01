@@ -1,56 +1,56 @@
 # VisoLingua - Live Translation Overlay Tool - Claude Code Prompt
 
-## Projekt-Übersicht
+## Project Overview
 
-Erstelle ein **Live-Übersetzungs-Overlay-Tool** mit dem Namen "VisoLingua" in Python, das ein transparentes Fenster über andere Anwendungen legt, Screenshots des darunter liegenden Bereichs an LLMs sendet und Übersetzungen in einem separaten Tab anzeigt.
+Create a **Live Translation Overlay Tool** named "VisoLingua" in Python that places a transparent window over other applications, sends screenshots of the underlying area to LLMs, and displays translations in a separate tab.
 
-**Basis-Referenz**: [OverText Repository](https://github.com/thiswillbeyourgithub/OverText) - verwende dieses als Inspiration für die transparente Overlay-Funktionalität.
+**Base Reference**: [OverText Repository](https://github.com/thiswillbeyourgithub/OverText) - use this as inspiration for transparent overlay functionality.
 
-## Kern-Features
+## Core Features
 
-### 1. **Transparentes Capture-Fenster**
-- **Startverhalten**: Transparentes Fenster öffnet sich automatisch beim Programmstart
-- **Verschiebbar**: Drag & Drop über die Titelleiste 
-- **Größenänderung**: Resize-Handle in der rechten unteren Ecke
-- **Transparenz**: Vollständig transparent, nur Rahmen sichtbar
-- **Always-on-Top**: Bleibt über anderen Fenstern
+### 1. **Transparent Capture Window**
+- **Startup Behavior**: Transparent window opens automatically at program start
+- **Movable**: Drag & drop via title bar
+- **Resizable**: Resize handle in bottom-right corner
+- **Transparency**: Fully transparent, only border visible
+- **Always-on-Top**: Stays above other windows
 
-### 2. **Screenshot & LLM-Integration**
-- **Trigger**: Klick ins transparente Fenster erfasst den darunter liegenden Bereich
-- **LLM-Auswahl**: Konfigurierbar zwischen Gemini 2.5 Flash und GPT-4.1 Mini/Nano
-- **Spracherkennung**: Automatische Erkennung der Quellsprache (Fokus: **Chinesisch → Deutsch**)
-- **Optimierung**: Bildkompression für schnelle API-Calls
+### 2. **Screenshot & LLM Integration**
+- **Trigger**: Click in transparent window captures the underlying area
+- **LLM Selection**: Configurable between Gemini 2.5 Flash and GPT-4.1 Mini/Nano
+- **Language Detection**: Automatic source language detection (Focus: **Chinese → German**)
+- **Optimization**: Image compression for fast API calls
 
-### 3. **Dual-Tab-System**
-- **Tab 1 - Capture**: Transparentes Overlay-Fenster
-- **Tab 2 - Ergebnis**: Opakes Fenster mit Übersetzungstext
-- **Umschaltung**: Platzsparend über **Doppelklick auf Titelleiste** oder Hotkey
-- **Ergbnis-Features**: Text kopierbar, scrollbar, formatiert
+### 3. **Dual-Tab System**
+- **Tab 1 - Capture**: Transparent overlay window
+- **Tab 2 - Result**: Opaque window with translation text
+- **Switching**: Space-saving via **double-click on title bar** or hotkey
+- **Result Features**: Text copyable, scrollable, formatted
 
-## Technische Anforderungen
+## Technical Requirements
 
-### **Tech-Stack**
-# Kern-Dependencies
-- tkinter          # GUI & Overlay
-- mss              # Ultra-schnelle Screenshots  
-- Pillow           # Bildverarbeitung
+### **Tech Stack**
+# Core Dependencies
+- tkinter          # GUI & overlay
+- mss              # Ultra-fast screenshots
+- Pillow           # Image processing
 - requests         # LLM API calls
-- asyncio          # Asynchrone Verarbeitung
+- asyncio          # Asynchronous processing
 - configparser     # Settings
-- pyperclip        # Clipboard-Integration
-- pystray          # System Tray (optional)
+- pyperclip        # Clipboard integration
+- pystray          # System tray (optional)
 
-### **Projekt-Struktur**
+### **Project Structure**
 ```
 translation-overlay/
 ├── main.py              # Entry point
 ├── config/
-│   ├── settings.py      # Konfiguration & API-Keys
+│   ├── settings.py      # Configuration & API keys
 │   └── config.ini       # User settings
 ├── ui/
-│   ├── overlay.py       # Transparentes Capture-Fenster
-│   ├── result_window.py # Ergebnis-Tab
-│   └── components.py    # UI-Komponenten
+│   ├── overlay.py       # Transparent capture window
+│   ├── result_window.py # Result tab
+│   └── components.py    # UI components
 ├── core/
 │   ├── screenshot.py    # Screen capture logic
 │   ├── translator.py    # LLM API integration
@@ -62,20 +62,20 @@ translation-overlay/
     ├── icons/           # App icons
     └── styles/          # UI styling
 ```
-## Detaillierte Feature-Spezifikationen
+## Detailed Feature Specifications
 
-### **Capture-Fenster (Tab 1)**
-# Technische Requirements
-- Transparenz: 90-95% transparent, nur dünner Rahmen
-- Mindestgröße: 200x200 pixels
-- Maximale Größe: Bildschirmauflösung
-- Rahmenfarbe: Anpassbar (Standard: Rot/Grün für Aktiv/Inaktiv)
-- Cursor: Changes to crosshair beim Hover
-- Feedback: Kurzer visueller Feedback beim Screenshot
+### **Capture Window (Tab 1)**
+# Technical Requirements
+- Transparency: 90-95% transparent, only thin border
+- Minimum size: 200x200 pixels
+- Maximum size: Screen resolution
+- Border color: Customizable (Default: Red/Green for Active/Inactive)
+- Cursor: Changes to crosshair on hover
+- Feedback: Brief visual feedback on screenshot
 
-### **LLM-Integration**
+### **LLM Integration**
 ```python
-# API-Unterstützung
+# API Support
 SUPPORTED_LLMS = {
     'gemini-2.5-flash': {
         'endpoint': 'https://generativelanguage.googleapis.com/v1beta/',
@@ -84,53 +84,53 @@ SUPPORTED_LLMS = {
     },
     'gpt-4.1-mini': {
         'endpoint': 'https://api.openai.com/v1/',
-        'max_image_size': '20MB', 
+        'max_image_size': '20MB',
         'cost_per_1m_tokens': {'input': 0.40, 'output': 1.60}
     },
     'gpt-4.1-nano': {
         'endpoint': 'https://api.openai.com/v1/',
         'max_image_size': '20MB',
-        'cost_per_1m_tokens': {'input': 0.15, 'output': 0.60}  # geschätzt
+        'cost_per_1m_tokens': {'input': 0.15, 'output': 0.60}  # estimated
     }
 }
 
 # Translation Prompt Template
 TRANSLATION_PROMPT = """
-Du bist ein Experte für Chinesisch-Deutsch-Übersetzung. 
-Analysiere das Bild und:
-1. Erkenne automatisch die Quellsprache
-2. Übersetze ALLEN erkannten Text ins Deutsche
-3. Behalte die ursprüngliche Formatierung bei
-4. Bei mehreren Textblöcken: nummeriere sie
+You are an expert in Chinese-German translation.
+Analyze the image and:
+1. Automatically detect the source language
+2. Translate ALL detected text to German
+3. Maintain original formatting
+4. For multiple text blocks: number them
 
-Ausgabeformat:
-**Erkannte Sprache:** [Sprache]
-**Übersetzung:**
-[übersetzter Text]
+Output format:
+**Detected Language:** [Language]
+**Translation:**
+[translated text]
 """
 ```
 
-### **Ergebnis-Fenster (Tab 2)**
-# UI-Features
-- Scrollbares Textfeld mit letzter Übersetzung
-- "Kopieren"-Button für gesamten Text
-- "Verlauf"-Dropdown mit letzten 10 Übersetzungen
-- "Ergebnis löschen"-Button
-- "Einstellungen"-Button für LLM-Konfiguration
-- Status-Anzeige: API-Kosten, Verarbeitungszeit, Fehler
+### **Result Window (Tab 2)**
+# UI Features
+- Scrollable text field with last translation
+- "Copy" button for entire text
+- "History" dropdown with last 10 translations
+- "Clear Result" button
+- "Settings" button for LLM configuration
+- Status display: API costs, processing time, errors
 
-# Fenster-Properties
-- Größe: 400x300 minimum, resizable
-- Position: Zentriert oder letzte Position speichern
-- Opacity: 100% (nicht transparent)
+# Window Properties
+- Size: 400x300 minimum, resizable
+- Position: Centered or save last position
+- Opacity: 100% (not transparent)
 
-### **Konfiguration & Settings**
+### **Configuration & Settings**
 # config.ini Structure
 ```
 [api]
 default_llm = gemini-2.5-flash
-gemini_api_key = 
-openai_api_key = 
+gemini_api_key =
+openai_api_key =
 
 [ui]
 overlay_transparency = 0.05
@@ -151,80 +151,80 @@ take_screenshot = click
 copy_result = ctrl+c
 ```
 
-## Implementation-Leitlinien
+## Implementation Guidelines
 
-### **1. Overlay-Architektur**
-- Basiere das transparente Fenster auf **OverText-Prinzipien**
-- Verwende `tkinter.Toplevel()` mit `attributes('-alpha', 0.05)`  
-- Implementiere Custom-Resize-Handles mit Mouse-Events
-- Stelle sicher, dass das Fenster interaktiv bleibt trotz Transparenz
+### **1. Overlay Architecture**
+- Base the transparent window on **OverText principles**
+- Use `tkinter.Toplevel()` with `attributes('-alpha', 0.05)`
+- Implement custom resize handles with mouse events
+- Ensure window remains interactive despite transparency
 
-### **2. Screenshot-Optimierung**
-#### Effizienter Screenshot-Workflow
-1. Erfasse nur den Overlay-Bereich (nicht gesamter Bildschirm)
-2. Komprimiere Bild für LLM (JPEG, 85% Qualität)
-3. Cache identische Screenshots (MD5-Hash)
-4. Async processing um UI nicht zu blockieren
+### **2. Screenshot Optimization**
+#### Efficient Screenshot Workflow
+1. Capture only overlay area (not entire screen)
+2. Compress image for LLM (JPEG, 85% quality)
+3. Cache identical screenshots (MD5 hash)
+4. Async processing to avoid blocking UI
 
-### **3. Tab-Switching-Mechanismus**
+### **3. Tab-Switching Mechanism**
 #### Smart Tab Management
-- Ein tkinter.Tk() Hauptfenster
-- Dynamisches Umschalten zwischen transparency und opacity
-- Behalte Fensterposition beim Umschalten
+- One tkinter.Tk() main window
+- Dynamic switching between transparency and opacity
+- Maintain window position when switching
 - Smooth transitions (optional: fade animation)
 
 ### **4. Error Handling & UX**
-#### Robuste Fehlerbehandlung
-- API-Fehler: Fallback auf anderen LLM oder Retry
-- Netzwerk-Timeout: User-freundliche Fehlermeldung
-- Invalid Screenshots: Validierung vor API-Call
-- Rate Limiting: Intelligente Backoff-Strategie
+#### Robust Error Handling
+- API errors: Fallback to other LLM or retry
+- Network timeout: User-friendly error message
+- Invalid screenshots: Validation before API call
+- Rate limiting: Intelligent backoff strategy
 
-### **5. Performance-Optimierungen**
-- **Caching**: Identische Bilder nicht erneut übersetzen
-- **Lazy Loading**: LLM-APIs erst bei Bedarf initialisieren  
-- **Background Processing**: Screenshots und API-Calls in separaten Threads
-- **Memory Management**: Alte Screenshots nach Zeit oder Anzahl löschen
+### **5. Performance Optimizations**
+- **Caching**: Don't re-translate identical images
+- **Lazy Loading**: Initialize LLM APIs only when needed
+- **Background Processing**: Screenshots and API calls in separate threads
+- **Memory Management**: Delete old screenshots after time or count
 
-## Spezielle Anforderungen für Chinesisch
+## Special Requirements for Chinese
 
 ### **Font & Rendering**
-#### Chinesische Zeichen-Unterstützung
-- Font: "Microsoft YaHei", "SimHei", oder System-Standard
-- Unicode: Volle UTF-8-Unterstützung
-- Rendering: Anti-Aliasing für bessere Lesbarkeit
+#### Chinese Character Support
+- Font: "Microsoft YaHei", "SimHei", or system default
+- Unicode: Full UTF-8 support
+- Rendering: Anti-aliasing for better readability
 
-### **OCR-Optimierung**
+### **OCR Optimization**
 ```python
-# LLM-Prompt-Optimierung für Chinesisch
+# LLM Prompt Optimization for Chinese
 CHINESE_OPTIMIZED_PROMPT = """
-Speziell für chinesischen Text:
-- Erkenne sowohl vereinfachte als auch traditionelle Zeichen
-- Beachte Kontext für mehrdeutige Zeichen
-- Übersetze idiomatische Ausdrücke sinngemäß
-- Bei technischen Begriffen: gib auch englische Entsprechung an
+Specifically for Chinese text:
+- Detect both simplified and traditional characters
+- Consider context for ambiguous characters
+- Translate idiomatic expressions contextually
+- For technical terms: also provide English equivalent
 """
 ```
 
-## Cross-Platform-Kompatibilität
+## Cross-Platform Compatibility
 
-### **Windows-Optimierungen**
-#### Windows-spezifische Features
-- DPI-Awareness für HiDPI-Displays
-- Windows-native Transparenz-APIs
-- Taskbar-Integration optional
+### **Windows Optimizations**
+#### Windows-Specific Features
+- DPI awareness for HiDPI displays
+- Windows-native transparency APIs
+- Taskbar integration optional
 
-### **Linux/macOS-Anpassungen**
-#### Plattform-spezifische Adjustments
-- X11/Wayland-Kompatibilität für Linux
-- macOS: Cocoa-Integration für native Overlays
-- Cursor-Handling per Plattform anpassen
+### **Linux/macOS Adaptations**
+#### Platform-Specific Adjustments
+- X11/Wayland compatibility for Linux
+- macOS: Cocoa integration for native overlays
+- Cursor handling per platform
 
 ## Deployment & Distribution
 
-### **PyInstaller-Setup**
+### **PyInstaller Setup**
 ```bash
-# Build-Command für standalone executable
+# Build command for standalone executable
 pyinstaller --onefile --windowed \
   --add-data "config;config" \
   --add-data "assets;assets" \
@@ -233,26 +233,26 @@ pyinstaller --onefile --windowed \
   main.py
 ```
 
-### **First-Run-Setup**
+### **First-Run Setup**
 #### Initial Setup Wizard
-1. API-Keys eingeben (Gemini/OpenAI)
-2. Standard-LLM auswählen
-3. Hotkeys konfigurieren
-4. Quick Tutorial für Bedienung
+1. Enter API keys (Gemini/OpenAI)
+2. Select default LLM
+3. Configure hotkeys
+4. Quick tutorial for usage
 
 ## Testing & Quality Assurance
 
-### **Test-Cases**
-#### Kritische Test-Szenarien
-- Screenshot verschiedener Bildschirmregionen
-- API-Ausfälle und Timeouts
-- Sehr große/kleine Overlay-Fenster
-- Schnelle aufeinanderfolgende Screenshots
-- Chinesische Zeichen-Rendering
-- Tab-Switching unter verschiedenen Bedingungen
+### **Test Cases**
+#### Critical Test Scenarios
+- Screenshot different screen regions
+- API failures and timeouts
+- Very large/small overlay windows
+- Rapid successive screenshots
+- Chinese character rendering
+- Tab switching under various conditions
 
-**Zusätzliche Referenzen:**
+**Additional References:**
 - GitHub: https://github.com/thiswillbeyourgithub/OverText
-- Orientiere dich an bewährten Patterns für transparente Overlays
+- Follow proven patterns for transparent overlays
 
-**Ziel:** Ein benutzerfreundliches, performantes Tool für Live-Übersetzung mit Fokus auf chinesische Texte und nahtlose Desktop-Integration.
+**Goal:** A user-friendly, performant tool for live translation with focus on Chinese texts and seamless desktop integration.

@@ -1,120 +1,120 @@
 # VisoLingua Windows Installation Guide
 
-VisoLingua kann auf verschiedene Weise als echte Windows-App installiert werden. Hier sind alle verfügbaren Optionen:
+VisoLingua can be installed as a real Windows app in various ways. Here are all available options:
 
-## 🚀 Option 1: Standalone EXE (Empfohlen)
+## 🚀 Option 1: Standalone EXE (Recommended)
 
-### Schritt 1: EXE erstellen
+### Step 1: Create EXE
 ```batch
-# Einfachste Methode - alles automatisch
+# Easiest method - everything automatic
 build.bat
 
-# Oder manuell
+# Or manually
 python build_exe.py
 ```
 
-**Ergebnis**: `dist/VisoLingua.exe` (~50-100MB) - Einzelne Datei, funktioniert auf jedem Windows-PC
+**Result**: `dist/VisoLingua.exe` (~50-100MB) - Single file, works on any Windows PC
 
-### Schritt 2: Desktop-Icon erstellen (Optional)
+### Step 2: Create Desktop Icon (Optional)
 ```batch
-# In den dist/ Ordner wechseln
+# Change to dist/ folder
 cd dist
 
-# Desktop-Shortcut erstellen
+# Create desktop shortcut
 ..\create_shortcut.bat
 ```
 
-## 🏗️ Option 2: Vollständige Windows-Installation
+## 🏗️ Option 2: Full Windows Installation
 
-### Automatische Installation mit Admin-Rechten
+### Automatic Installation with Admin Rights
 ```batch
-# 1. EXE erstellen (falls noch nicht geschehen)
+# 1. Create EXE (if not already done)
 build.bat
 
-# 2. In den dist/ Ordner wechseln
+# 2. Change to dist/ folder
 cd dist
 
-# 3. Als Administrator ausführen
+# 3. Run as Administrator
 ..\install_windows.bat
 ```
 
-**Was passiert:**
-- ✅ Installation nach `C:\Program Files\VisoLingua\`
-- ✅ Desktop-Shortcut
-- ✅ Start Menu Eintrag
-- ✅ Windows "Programme hinzufügen/entfernen" Integration
-- ✅ Automatischer Uninstaller
+**What happens:**
+- ✅ Installation to `C:\Program Files\VisoLingua\`
+- ✅ Desktop shortcut
+- ✅ Start Menu entry
+- ✅ Windows "Add/Remove Programs" integration
+- ✅ Automatic uninstaller
 
-## 🎯 Option 3: Professioneller Installer (Erweitert)
+## 🎯 Option 3: Professional Installer (Advanced)
 
-### Voraussetzungen
-1. [NSIS](https://nsis.sourceforge.io/) installieren
-2. NSIS zu Windows PATH hinzufügen
+### Prerequisites
+1. Install [NSIS](https://nsis.sourceforge.io/)
+2. Add NSIS to Windows PATH
 
-### Installer erstellen
+### Create Installer
 ```batch
-# 1. EXE erstellen
+# 1. Create EXE
 build.bat
 
-# 2. Professionellen Installer erstellen
+# 2. Create professional installer
 build_installer.bat
 ```
 
-**Ergebnis**: `VisoLingua-Setup-1.0.0.exe` - Professioneller Installer mit Wizard
+**Result**: `VisoLingua-Setup-1.0.0.exe` - Professional installer with wizard
 
-## 📋 Verfügbare Dateien
+## 📋 Available Files
 
-Nach dem Erstellen finden Sie folgende Dateien:
+After building, you'll find the following files:
 
 ```
 VisoLingua/
-├── build.bat                    # EXE erstellen
-├── build_exe.py                 # Python Build-Skript
-├── create_shortcut.bat          # Desktop-Icon erstellen
-├── install_windows.bat          # Vollinstallation
-├── installer.nsi               # NSIS Installer-Konfiguration
-├── build_installer.bat         # Professionellen Installer erstellen
-├── assets/icons/app.ico        # Windows App-Icon
+├── build.bat                    # Create EXE
+├── build_exe.py                 # Python build script
+├── create_shortcut.bat          # Create desktop icon
+├── install_windows.bat          # Full installation
+├── installer.nsi               # NSIS installer configuration
+├── build_installer.bat         # Create professional installer
+├── assets/icons/app.ico        # Windows app icon
 └── dist/
-    ├── VisoLingua.exe          # Standalone Anwendung
-    └── Start_VisoLingua.bat    # Launcher mit Fehlererkennung
+    ├── VisoLingua.exe          # Standalone application
+    └── Start_VisoLingua.bat    # Launcher with error detection
 ```
 
-## 🎮 Verwendung
+## 🎮 Usage
 
-### Einfach (Option 1)
-1. `build.bat` ausführen
-2. `dist/VisoLingua.exe` doppelklicken
-3. Fertig! 🎉
+### Simple (Option 1)
+1. Run `build.bat`
+2. Double-click `dist/VisoLingua.exe`
+3. Done! 🎉
 
-### Mit Desktop-Icon
-1. Obige Schritte + `create_shortcut.bat`
-2. VisoLingua-Icon auf Desktop doppelklicken
+### With Desktop Icon
+1. Above steps + `create_shortcut.bat`
+2. Double-click VisoLingua icon on desktop
 
-### Vollinstallation (Option 2)
-1. `build.bat` → `cd dist` → `install_windows.bat` (als Admin)
-2. VisoLingua über Start Menu oder Desktop starten
+### Full Installation (Option 2)
+1. `build.bat` → `cd dist` → `install_windows.bat` (as Admin)
+2. Start VisoLingua via Start Menu or Desktop
 
-### Professioneller Installer (Option 3)
-1. `build_installer.bat` ausführen
-2. `VisoLingua-Setup-1.0.0.exe` an andere weitergeben
-3. Empfänger führt Setup aus → Automatische Installation
+### Professional Installer (Option 3)
+1. Run `build_installer.bat`
+2. Share `VisoLingua-Setup-1.0.0.exe` with others
+3. Recipients run setup → Automatic installation
 
-## 🔧 Erweiterte Features
+## 🔧 Advanced Features
 
-### Autostart mit Windows (Option 3)
-Der professionelle Installer bietet Option für automatischen Start mit Windows.
+### Autostart with Windows (Option 3)
+The professional installer offers option for automatic start with Windows.
 
 ### System Tray Integration
-Geplant für zukünftige Versionen - VisoLingua minimiert in die Taskleiste.
+Planned for future versions - VisoLingua minimizes to taskbar.
 
-### Globale Hotkeys
-Geplant - VisoLingua über Tastenkürzel von überall aufrufen.
+### Global Hotkeys
+Planned - call VisoLingua from anywhere via keyboard shortcuts.
 
 ## 🛠️ Troubleshooting
 
 ### "Python not found"
-- Python 3.8+ installieren und zu PATH hinzufügen
+- Install Python 3.8+ and add to PATH
 
 ### "PyInstaller not found"
 ```batch
@@ -122,37 +122,37 @@ pip install pyinstaller
 ```
 
 ### "makensis not found"
-- [NSIS](https://nsis.sourceforge.io/) installieren
-- Oder Option 1/2 verwenden (kein NSIS nötig)
+- Install [NSIS](https://nsis.sourceforge.io/)
+- Or use Option 1/2 (no NSIS needed)
 
-### EXE startet nicht
-- Windows Defender/Antivirus deaktivieren (false positive)
-- `Start_VisoLingua.bat` für bessere Fehlermeldungen verwenden
+### EXE doesn't start
+- Disable Windows Defender/Antivirus (false positive)
+- Use `Start_VisoLingua.bat` for better error messages
 
-### Admin-Rechte erforderlich
-- Rechtsklick auf Batch-Datei → "Als Administrator ausführen"
+### Admin rights required
+- Right-click on batch file → "Run as Administrator"
 
 ## 📦 Distribution
 
-### Für Endbenutzer
-- **Einfach**: `VisoLingua.exe` + `create_shortcut.bat`
-- **Professionell**: `VisoLingua-Setup-1.0.0.exe`
+### For End Users
+- **Simple**: `VisoLingua.exe` + `create_shortcut.bat`
+- **Professional**: `VisoLingua-Setup-1.0.0.exe`
 
-### Für Entwickler
-- Vollständiges Repository mit allen Build-Skripten
+### For Developers
+- Complete repository with all build scripts
 
-## 🎯 Empfohlener Workflow
+## 🎯 Recommended Workflow
 
-1. **Entwicklung**: Python-Version verwenden
-2. **Testing**: `build.bat` → EXE testen
-3. **Distribution**: `build_installer.bat` → Setup.exe verteilen
-4. **Endbenutzer**: Setup.exe ausführen → Fertig installiert
+1. **Development**: Use Python version
+2. **Testing**: `build.bat` → test EXE
+3. **Distribution**: `build_installer.bat` → distribute Setup.exe
+4. **End Users**: Run Setup.exe → Installed and ready
 
 ## 💡 Next Steps
 
-Nach erfolgreicher Installation:
-1. API-Keys in Settings konfigurieren
-2. README.md für Bedienungsanleitung lesen
-3. SETUP.md für detaillierte Konfiguration
+After successful installation:
+1. Configure API keys in Settings
+2. Read README.md for usage instructions
+3. Read SETUP.md for detailed configuration
 
-VisoLingua ist jetzt eine echte Windows-App! 🎉
+VisoLingua is now a real Windows app! 🎉

@@ -1,122 +1,122 @@
 # VisoLingua Desktop Shortcut Creation
 
-## 🔧 Problem behoben: PowerShell Escaping-Fehler
+## 🔧 Problem Fixed: PowerShell Escaping Error
 
-Das PowerShell-Escaping-Problem wurde behoben! Hier sind alle verfügbaren Methoden:
+The PowerShell escaping problem has been fixed! Here are all available methods:
 
-## 🚀 Option 1: VBScript-Version (Empfohlen)
+## 🚀 Option 1: VBScript Version (Recommended)
 
 ```batch
-# Zuverlässigste Methode - funktioniert auf allen Windows-Versionen
+# Most reliable method - works on all Windows versions
 create_shortcut_fixed.bat
 ```
 
-**Vorteile:**
-- ✅ Funktioniert auf Windows 7-11
-- ✅ Keine PowerShell-Execution-Policy Probleme
-- ✅ Robustes Error-Handling
+**Advantages:**
+- ✅ Works on Windows 7-11
+- ✅ No PowerShell execution policy issues
+- ✅ Robust error handling
 
-## 🚀 Option 2: PowerShell-Version (Modern)
+## 🚀 Option 2: PowerShell Version (Modern)
 
 ```powershell
-# Für moderne Windows-Systeme
+# For modern Windows systems
 powershell -ExecutionPolicy Bypass -File "Create-Shortcut.ps1"
 ```
 
-**Vorteile:**
+**Advantages:**
 - ✅ Native PowerShell
-- ✅ Bessere Fehlerbehandlung
-- ✅ Detaillierte Ausgaben
+- ✅ Better error handling
+- ✅ Detailed output
 
-## 🚀 Option 3: Reparierte Batch-Version
+## 🚀 Option 3: Repaired Batch Version
 
 ```batch
-# Ursprüngliche Batch-Datei - jetzt repariert
+# Original batch file - now repaired
 create_shortcut.bat
 ```
 
-**Änderung:**
+**Change:**
 ```batch
-# Alt (fehlerhaft):
+# Old (broken):
 powershell -Command "$WshShell = ..."
 
-# Neu (funktioniert):
+# New (works):
 powershell -Command "& {$WshShell = ...}"
 ```
 
-## 📋 Verfügbare Shortcut-Creator:
+## 📋 Available Shortcut Creators:
 
-| Datei | Methode | Kompatibilität | Empfehlung |
-|-------|---------|---------------|------------|
-| `create_shortcut_fixed.bat` | VBScript | Windows 7-11 | ✅ **Beste** |
+| File | Method | Compatibility | Recommendation |
+|------|--------|--------------|----------------|
+| `create_shortcut_fixed.bat` | VBScript | Windows 7-11 | ✅ **Best** |
 | `Create-Shortcut.ps1` | PowerShell | Windows 10+ | ✅ Modern |
-| `create_shortcut.bat` | PowerShell | Windows 10+ | ✅ Repariert |
+| `create_shortcut.bat` | PowerShell | Windows 10+ | ✅ Repaired |
 
 ## 🛠️ Troubleshooting:
 
-### "Execution Policy" Fehler (PowerShell):
+### "Execution Policy" Error (PowerShell):
 ```powershell
-# Einmalig ausführen:
+# Run once:
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
-# Oder direkt umgehen:
+# Or bypass directly:
 powershell -ExecutionPolicy Bypass -File "Create-Shortcut.ps1"
 ```
 
-### VBScript blockiert:
-- Windows Defender Ausnahme hinzufügen
-- Oder manuell Shortcut erstellen
+### VBScript Blocked:
+- Add Windows Defender exception
+- Or create shortcut manually
 
-### Manuelle Shortcut-Erstellung:
-1. **Rechtsklick** auf Desktop → "Neu" → "Verknüpfung"
-2. **Pfad eingeben**: `C:\Pfad\zu\VisoLingua.exe`
+### Manual Shortcut Creation:
+1. **Right-click** on Desktop → "New" → "Shortcut"
+2. **Enter path**: `C:\Path\to\VisoLingua.exe`
 3. **Name**: "VisoLingua"
-4. **Fertigstellen**
+4. **Finish**
 
-## 🎯 Empfohlener Workflow:
+## 🎯 Recommended Workflow:
 
-### Für Entwickler:
+### For Developers:
 ```batch
-# 1. EXE bauen
+# 1. Build EXE
 python build_exe.py
 
-# 2. Ins dist/ Verzeichnis wechseln
+# 2. Change to dist/ directory
 cd dist
 
-# 3. Shortcut erstellen (beste Methode)
+# 3. Create shortcut (best method)
 ..\create_shortcut_fixed.bat
 ```
 
-### Für Endbenutzer (Portable Package):
+### For End Users (Portable Package):
 ```batch
-# Portable Package erstellen (enthält alle Shortcut-Creator)
+# Create portable package (contains all shortcut creators)
 create_portable.bat
 
-# Im Package dann:
+# In package then:
 cd VisoLingua-Portable
-"Create Desktop Shortcut.bat"  # Verwendet VBScript-Methode
+"Create Desktop Shortcut.bat"  # Uses VBScript method
 ```
 
-## 🔧 Was wurde repariert:
+## 🔧 What Was Fixed:
 
-### PowerShell-Escaping:
+### PowerShell Escaping:
 ```batch
-# Problem: ^ Zeichen funktioniert in PowerShell nicht
-powershell -Command "...(^)..."  # ❌ Fehler
+# Problem: ^ character doesn't work in PowerShell
+powershell -Command "...(^)..."  # ❌ Error
 
-# Lösung: & {} Block verwenden
-powershell -Command "& {...()...}"  # ✅ Funktioniert
+# Solution: Use & {} block
+powershell -Command "& {...()...}"  # ✅ Works
 ```
 
-### Robustheit:
-- ✅ **VBScript-Fallback** für maximale Kompatibilität
-- ✅ **Error-Handling** in allen Versionen
-- ✅ **Pfad-Validierung** vor Shortcut-Erstellung
-- ✅ **Cleanup** temporärer Dateien
+### Robustness:
+- ✅ **VBScript fallback** for maximum compatibility
+- ✅ **Error handling** in all versions
+- ✅ **Path validation** before shortcut creation
+- ✅ **Cleanup** of temporary files
 
-## 💡 Empfehlung:
+## 💡 Recommendation:
 
-**Für maximale Kompatibilität**: `create_shortcut_fixed.bat` verwenden
-**Für moderne Systeme**: `Create-Shortcut.ps1` verwenden
+**For maximum compatibility**: Use `create_shortcut_fixed.bat`
+**For modern systems**: Use `Create-Shortcut.ps1`
 
-Beide Methoden sind jetzt vollständig funktionsfähig! 🎉
+Both methods are now fully functional! 🎉

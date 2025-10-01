@@ -1,146 +1,146 @@
 # VisoLingua Build Fixes
 
-## 🔧 Problem: ICO-Datei nicht lesbar
+## 🔧 Problem: ICO File Not Readable
 
-**Ursache**: Das ursprüngliche ICO-Format war fehlerhaft.
+**Cause**: The original ICO format was corrupted.
 
-### ✅ Lösung 1: Automatische Icon-Erstellung
+### ✅ Solution 1: Automatic Icon Creation
 ```batch
-# Icon automatisch erstellen
+# Create icon automatically
 python create_icon.py
 
-# Dann EXE bauen
+# Then build EXE
 python build_exe.py
 ```
 
-### ✅ Lösung 2: Ohne Icon bauen
+### ✅ Solution 2: Build Without Icon
 ```batch
-# build_exe.py erkennt fehlende Icons automatisch und baut ohne
+# build_exe.py automatically detects missing icons and builds without
 python build_exe.py
 ```
 
-### ✅ Lösung 3: Manuelles Icon erstellen
+### ✅ Solution 3: Manual Icon Creation
 
-#### Online (Einfachste Methode):
-1. Icon-Generator: https://www.favicon-generator.org/
-2. Text eingeben: "VL" oder "VisoLingua"  
-3. Als ICO herunterladen
-4. Nach `assets/icons/app.ico` speichern
+#### Online (Easiest Method):
+1. Icon generator: https://www.favicon-generator.org/
+2. Enter text: "VL" or "VisoLingua"
+3. Download as ICO
+4. Save to `assets/icons/app.ico`
 
-#### Mit GIMP/Photoshop:
-1. **Größen erstellen**: 16x16, 32x32, 48x48, 256x256 pixels
-2. **Design**: Roter Hintergrund, weißer Text "VL"
-3. **Format**: PNG mit transparentem Hintergrund
-4. **Konvertieren**: https://convertio.co/png-ico/
-5. **Speichern**: Als `assets/icons/app.ico`
+#### With GIMP/Photoshop:
+1. **Create sizes**: 16x16, 32x32, 48x48, 256x256 pixels
+2. **Design**: Red background, white text "VL"
+3. **Format**: PNG with transparent background
+4. **Convert**: https://convertio.co/png-ico/
+5. **Save**: As `assets/icons/app.ico`
 
-## 🔧 Problem: PyInstaller-Fehler
+## 🔧 Problem: PyInstaller Errors
 
-### Batch-Datei zeigt "Failed to install" obwohl es installiert ist
+### Batch File Shows "Failed to install" Although It Is Installed
 
-**Fix**: Ignorieren und direkt Python verwenden:
+**Fix**: Ignore and use Python directly:
 ```batch
-# Direkt Python-Skript verwenden
+# Use Python script directly
 python build_exe.py
 ```
 
-### Moderne PyInstaller-Befehle für manuelle Builds:
+### Modern PyInstaller Commands for Manual Builds:
 ```batch
 pyinstaller --onefile --windowed --name=VisoLingua --icon=assets/icons/app.ico --add-data="config;config" --add-data="assets;assets" --hidden-import=PIL.ImageTk --collect-all=PIL main.py
 ```
 
-## 🔧 Problem: Module nicht gefunden
+## 🔧 Problem: Module Not Found
 
-### Zusätzliche Module installieren:
+### Install Additional Modules:
 ```batch
 pip install pillow mss aiohttp pyperclip
 ```
 
-### Für Windows-spezifische Probleme:
+### For Windows-Specific Problems:
 ```batch
 pip install pywin32
 ```
 
-## 🔧 Problem: EXE startet nicht
+## 🔧 Problem: EXE Doesn't Start
 
-### Debug-Version erstellen (mit Konsole):
+### Create Debug Version (With Console):
 ```batch
-# Ohne --windowed flag für Debug-Ausgaben
+# Without --windowed flag for debug output
 pyinstaller --onefile --name=VisoLingua-Debug main.py
 ```
 
-### Häufige Ursachen:
-1. **Antivirus**: Windows Defender blockiert unbekannte EXE
-   - **Fix**: Windows Defender Ausnahme hinzufügen
-2. **DLL-Fehler**: Fehlende System-DLLs
-   - **Fix**: Visual C++ Redistributable installieren
-3. **Path-Probleme**: Relative Pfade funktionieren nicht
-   - **Fix**: Bereits in unserem Code mit `get_resource_path()` behoben
+### Common Causes:
+1. **Antivirus**: Windows Defender blocks unknown EXE
+   - **Fix**: Add Windows Defender exception
+2. **DLL Error**: Missing system DLLs
+   - **Fix**: Install Visual C++ Redistributable
+3. **Path Problems**: Relative paths don't work
+   - **Fix**: Already fixed in our code with `get_resource_path()`
 
-## 🎯 Empfohlener Build-Prozess
+## 🎯 Recommended Build Process
 
-### Für Entwicklung:
+### For Development:
 ```batch
-# 1. Icon erstellen
+# 1. Create icon
 python create_icon.py
 
-# 2. EXE erstellen
+# 2. Create EXE
 python build_exe.py
 
-# 3. Testen
+# 3. Test
 dist\VisoLingua.exe
 ```
 
-### Für Distribution:
+### For Distribution:
 ```batch
-# 1. Vollständiger Build
+# 1. Complete build
 python create_icon.py
 python build_exe.py
 
-# 2. Desktop-Shortcut
+# 2. Desktop shortcut
 cd dist
 ..\create_shortcut.bat
 
-# 3. Oder Vollinstallation
+# 3. Or full installation
 ..\install_windows.bat
 ```
 
-## 🛠️ Advanced: Build-Konfiguration anpassen
+## 🛠️ Advanced: Customize Build Configuration
 
-### `build_exe.py` Parameter ändern:
+### Change `build_exe.py` Parameters:
 
 ```python
-# Für kleinere EXE (ohne alle PIL-Module):
-'--collect-submodules=PIL',  # statt --collect-all=PIL
+# For smaller EXE (without all PIL modules):
+'--collect-submodules=PIL',  # instead of --collect-all=PIL
 
-# Für Debug (mit Konsole):
-# '--windowed' entfernen
+# For debug (with console):
+# Remove '--windowed'
 
-# Zusätzliche Module:
-'--hidden-import=dein_modul',
+# Additional modules:
+'--hidden-import=your_module',
 ```
 
-### NSIS Installer customization:
-Bearbeite `installer.nsi` für:
-- Andere Farben/Icons
-- Zusätzliche Registry-Einträge  
-- Spezielle Installation-Optionen
+### NSIS Installer Customization:
+Edit `installer.nsi` for:
+- Different colors/icons
+- Additional registry entries
+- Special installation options
 
-## 📊 Build-Größen optimieren
+## 📊 Optimize Build Sizes
 
-### Aktuelle Größe: ~50-100MB
-### Zum Reduzieren:
+### Current Size: ~50-100MB
+### To Reduce:
 ```python
-# In build_exe.py, ersetze:
+# In build_exe.py, replace:
 '--collect-all=PIL'
-# mit:
+# with:
 '--collect-submodules=PIL.Image',
 '--collect-submodules=PIL.ImageTk',
 ```
 
-### Weitere Optimierungen:
-- `--exclude-module=test` 
+### Further Optimizations:
+- `--exclude-module=test`
 - `--exclude-module=unittest`
 - `--strip` (Linux/Mac)
 
-Das sollte alle Build-Probleme lösen! 🎉
+This should solve all build problems! 🎉
