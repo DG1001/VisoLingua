@@ -207,6 +207,27 @@
     <script>
         let currentTranslation = '';
 
+        // Global error handler
+        window.addEventListener('error', (e) => {
+            showStatus('JavaScript Error: ' + e.message, 0);
+            console.error('Error:', e);
+        });
+
+        window.addEventListener('unhandledrejection', (e) => {
+            showStatus('Promise Error: ' + e.reason, 0);
+            console.error('Unhandled rejection:', e);
+        });
+
+        // Test if Go backend is available
+        document.addEventListener('DOMContentLoaded', () => {
+            showStatus('App loaded, checking backend...', 2000);
+            if (window.go && window.go.main && window.go.main.App) {
+                showStatus('Backend connected!', 2000);
+            } else {
+                showStatus('ERROR: Backend not available!', 0);
+            }
+        });
+
         // Capture click handler
         document.getElementById('capture-area').addEventListener('click', async () => {
             try {
@@ -248,7 +269,8 @@
                 showStatus('Translation complete!', 2000);
             } catch (error) {
                 console.error('Capture error:', error);
-                showStatus('Error: ' + error.message, 5000);
+                const errorMsg = error && error.message ? error.message : String(error);
+                showStatus('Error: ' + errorMsg, 0);
             }
         });
 
