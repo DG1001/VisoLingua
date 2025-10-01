@@ -86,12 +86,27 @@ Same as other versions - config file at:
 
 ## Features
 
-✅ All features from Python/Rust versions:
-- Transparent overlay window
-- Screenshot capture
-- LLM integration (Gemini, OpenAI, Ollama)
-- Ask AI feature
-- Cross-platform support
+- ✅ **Control panel window** - Small always-on-top window
+- ✅ **Manual coordinate capture** - Enter X, Y, Width, Height or capture center
+- ✅ **LLM integration** - Supports Gemini, OpenAI, Ollama
+- ✅ **Ask AI feature** - Ask questions about translations
+- ✅ **Small binary** - Only ~12MB
+- ✅ **Cross-platform** - Windows, macOS, Linux
+
+## How to Use
+
+### Method 1: Capture Center of Screen
+1. Position text in the center of your screen
+2. Click "Capture Area" button
+3. It captures 800x600 from screen center
+
+### Method 2: Custom Coordinates
+1. Find the screen coordinates of your text area
+   - Use Windows Snipping Tool or similar to find X, Y position
+2. Enter X, Y, Width, Height in the input fields
+3. Click "Capture Custom"
+
+**Note:** Unlike the Rust version, this uses a control panel approach instead of a transparent overlay. The Go version captures specific screen coordinates rather than "what's under the window".
 
 ## Size Comparison
 
