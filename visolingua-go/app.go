@@ -7,6 +7,8 @@ import (
 	"image"
 	"image/png"
 	"bytes"
+	"os"
+	"path/filepath"
 
 	"github.com/kbinani/screenshot"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
