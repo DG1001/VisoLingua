@@ -2,15 +2,26 @@ use anyhow::{Context, Result};
 use base64::{engine::general_purpose::STANDARD, Engine};
 use image::{ImageBuffer, RgbaImage};
 use xcap::Monitor;
+use std::fs::OpenOptions;
+use std::io::Write;
+
+fn log_to_file(msg: &str) {
+    if let Ok(temp_dir) = std::env::temp_dir().to_str() {
+        let log_path = format!("{}/visolingua-rust-debug.log", temp_dir);
+        if let Ok(mut file) = OpenOptions::new().create(true).append(true).open(log_path) {
+            let _ = writeln!(file, "{}", msg);
+        }
+    }
+}
 
 /// Capture a screenshot of a specific area and return as base64-encoded PNG
 pub async fn capture_area(x: i32, y: i32, width: u32, height: u32) -> Result<String> {
-    println!("=== capture_area called ===");
-    println!("Input: x={}, y={}, width={}, height={}", x, y, width, height);
+    log_to_file("=== capture_area called ===");
+    log_to_file(&format!("Input: x={}, y={}, width={}, height={}", x, y, width, height));
 
     // Get all monitors
     let monitors = Monitor::all().context("Failed to get monitors")?;
-    println!("Found {} monitors", monitors.len());
+    log_to_file(&format!("Found {} monitors", monitors.len()));
 
     // Find the monitor containing this area (use primary for now)
     let monitor = monitors
@@ -18,12 +29,12 @@ pub async fn capture_area(x: i32, y: i32, width: u32, height: u32) -> Result<Str
         .next()
         .context("No monitors found")?;
 
-    println!("Monitor: x={}, y={}, width={}, height={}",
-             monitor.x(), monitor.y(), monitor.width(), monitor.height());
+    log_to_file(&format!("Monitor: x={}, y={}, width={}, height={}",
+             monitor.x(), monitor.y(), monitor.width(), monitor.height()));
 
     // Capture the entire monitor
     let image = monitor.capture_image().context("Failed to capture screenshot")?;
-    println!("Captured image: {}x{}", image.width(), image.height());
+    log_to_file(&format!("Captured image: {}x{}", image.width(), image.height()));
 
     // Get monitor position
     let monitor_x = monitor.x();
@@ -33,12 +44,12 @@ pub async fn capture_area(x: i32, y: i32, width: u32, height: u32) -> Result<Str
     let rel_x = (x - monitor_x).max(0) as u32;
     let rel_y = (y - monitor_y).max(0) as u32;
 
-    println!("Relative coords: rel_x={}, rel_y={}", rel_x, rel_y);
-    println!("Crop params: x={}, y={}, width={}, height={}", rel_x, rel_y, width, height);
+    log_to_file(&format!("Relative coords: rel_x={}, rel_y={}", rel_x, rel_y));
+    log_to_file(&format!("Crop params: x={}, y={}, width={}, height={}", rel_x, rel_y, width, height));
 
     // Crop to the specified area
     let cropped = crop_image(&image, rel_x, rel_y, width, height)?;
-    println!("Cropped image: {}x{}", cropped.width(), cropped.height());
+    log_to_file(&format!("Cropped image: {}x{}", cropped.width(), cropped.height()));
 
     // Encode as PNG and convert to base64
     let mut png_bytes = Vec::new();

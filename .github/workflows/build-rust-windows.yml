@@ -121,6 +121,9 @@ jobs:
           echo Configuration file location:
           echo %APPDATA%\visolingua\config.toml
           echo.
+          echo Debug log location:
+          echo %TEMP%\visolingua-rust-debug.log
+          echo.
 
           REM Check if config exists
           if not exist "%APPDATA%\visolingua\config.toml" (
@@ -134,7 +137,7 @@ jobs:
               pause
           )
 
-          start "" visolingua.exe
+          start "" visolingua.exe > "%TEMP%\visolingua-rust-debug.log" 2>&1
           "@ | Out-File -FilePath "$portableDir/Start-VisoLingua.bat" -Encoding ASCII
 
           # Create README
