@@ -185,6 +185,19 @@
         .status.show {
             display: block;
         }
+
+        input[type="number"] {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #ff4444;
+        }
     </style>
 </head>
 <body>
@@ -192,8 +205,21 @@
     <div id="capture-view">
         <div id="capture-area">
             <div class="emoji">📸</div>
-            <p><strong>Click here to capture</strong></p>
-            <p style="font-size: 12px; color: #aaa;">Position this window over the text you want to translate</p>
+            <p><strong>Screen Capture</strong></p>
+            <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+                <button class="button" onclick="captureScreen()">📷 Capture Area</button>
+                <div style="font-size: 12px; color: #aaa; text-align: center;">
+                    <p>Captures a 800x600 area from center of primary screen</p>
+                    <p style="margin-top: 5px;">Or enter custom coordinates:</p>
+                </div>
+                <div style="display: flex; gap: 5px; font-size: 12px;">
+                    <input type="number" id="captureX" placeholder="X" style="width: 60px; padding: 5px;">
+                    <input type="number" id="captureY" placeholder="Y" style="width: 60px; padding: 5px;">
+                    <input type="number" id="captureW" placeholder="Width" style="width: 70px; padding: 5px;">
+                    <input type="number" id="captureH" placeholder="Height" style="width: 70px; padding: 5px;">
+                </div>
+                <button class="button secondary" onclick="captureCustom()">Capture Custom</button>
+            </div>
         </div>
     </div>
 
@@ -245,51 +271,63 @@
             }
         });
 
-        // Capture click handler
-        document.getElementById('capture-area').addEventListener('click', async () => {
+        // Capture center of screen
+        async function captureScreen() {
             try {
-                showStatus('Getting window bounds...');
+                showStatus('Capturing center of screen...');
 
-                // Get window bounds from backend
-                const bounds = await window.go.main.App.GetWindowBounds();
-                console.log('Window bounds:', bounds);
-                showStatus(`Bounds: ${bounds.x},${bounds.y} ${bounds.width}x${bounds.height}`);
+                // Capture 800x600 from center of screen (assuming 1920x1080)
+                const x = (1920 - 800) / 2;
+                const y = (1080 - 600) / 2;
 
-                await new Promise(r => setTimeout(r, 500)); // Brief pause to see status
-
-                showStatus('Capturing screenshot...');
-
-                // Capture screenshot of the window area
-                const imageBase64 = await window.go.main.App.CaptureScreenshot(
-                    bounds.x,
-                    bounds.y,
-                    bounds.width,
-                    bounds.height
-                );
-
-                showStatus(`Screenshot captured: ${imageBase64.length} chars`);
-                await new Promise(r => setTimeout(r, 500));
-
-                showStatus('Translating...');
-
-                // Translate
-                const result = await window.go.main.App.TranslateImage(imageBase64);
-
-                // Show result
-                currentTranslation = result;
-                document.getElementById('translation-result').textContent = result;
-
-                // Switch to result view
-                document.getElementById('capture-view').style.display = 'none';
-                document.getElementById('result-view').classList.add('active');
-
-                showStatus('Translation complete!', 2000);
+                await performCapture(x, y, 800, 600);
             } catch (error) {
-                console.error('Capture error:', error);
-                const errorMsg = error && error.message ? error.message : String(error);
-                showStatus('Error: ' + errorMsg, 0);
+                handleError(error);
             }
-        });
+        }
+
+        // Capture custom area
+        async function captureCustom() {
+            try {
+                const x = parseInt(document.getElementById('captureX').value) || 0;
+                const y = parseInt(document.getElementById('captureY').value) || 0;
+                const w = parseInt(document.getElementById('captureW').value) || 800;
+                const h = parseInt(document.getElementById('captureH').value) || 600;
+
+                await performCapture(x, y, w, h);
+            } catch (error) {
+                handleError(error);
+            }
+        }
+
+        // Perform capture and translation
+        async function performCapture(x, y, width, height) {
+            showStatus(`Capturing ${width}x${height} at (${x},${y})...`);
+
+            const imageBase64 = await window.go.main.App.CaptureScreenshot(x, y, width, height);
+            showStatus(`Screenshot captured: ${imageBase64.length} chars`);
+
+            await new Promise(r => setTimeout(r, 300));
+
+            showStatus('Translating...');
+            const result = await window.go.main.App.TranslateImage(imageBase64);
+
+            // Show result
+            currentTranslation = result;
+            document.getElementById('translation-result').textContent = result;
+
+            // Switch to result view
+            document.getElementById('capture-view').style.display = 'none';
+            document.getElementById('result-view').classList.add('active');
+
+            showStatus('Translation complete!', 2000);
+        }
+
+        function handleError(error) {
+            console.error('Capture error:', error);
+            const errorMsg = error && error.message ? error.message : String(error);
+            showStatus('Error: ' + errorMsg, 0);
+        }
 
         function backToCapture() {
             document.getElementById('capture-view').style.display = 'flex';
