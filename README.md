@@ -12,6 +12,49 @@ Ein benutzerfreundliches Desktop-Tool für Live-Übersetzung mit transparentem O
 ![Übersetzung](screen_translate.png)
 *Ergebnis-Fenster mit der übersetzten Text-Ausgabe*
 
+## 🚀 Available Implementations
+
+VisoLingua is available in **three implementations** with different trade-offs:
+
+| Version | Status | Binary Size | Startup | Best For | Link |
+|---------|--------|-------------|---------|----------|------|
+| **🐍 Python** | ✅ **Working** | ~50 MB | ~2-3s | Development, quick iteration | *(this directory)* |
+| **🦀 Rust** | ✅ **Working** | **~8 MB** | **~0.5s** | **Production use** ⭐ | [visolingua-rust/](visolingua-rust/) |
+| **🐹 Go** | ⚠️ **Broken** | ~12 MB | ~1s | Not recommended | [visolingua-go/](visolingua-go/) |
+
+### Quick Recommendations
+
+- **🎯 For end users**: Use the **[Rust version](visolingua-rust/)** - smallest, fastest, most reliable
+- **👨‍💻 For developers**: Use the **Python version** - easiest to modify and test
+- **⚠️ Avoid**: The **Go version** has critical screen capture bugs and is not functional
+
+### Version Details
+
+**Python (Original)**
+- ✅ Fully working, well-tested
+- ✅ Easy to modify and extend
+- ✅ All features implemented
+- ❌ Larger binary size
+- ❌ Requires Python runtime
+
+**Rust + Tauri (Recommended)**
+- ✅ Production-ready
+- ✅ Smallest binary (~8 MB)
+- ✅ Fastest startup
+- ✅ No runtime dependencies
+- ✅ No antivirus false positives
+- ❌ Longer build times (~5 min)
+
+**Go + Wails (Experimental)**
+- ⚠️ **NOT WORKING** - screen capture broken
+- ❌ Only captures app window, not user's screen
+- ❌ Unusable for translation purposes
+- 📝 Kept as reference implementation
+
+See each version's README for detailed setup instructions.
+
+---
+
 ## Features
 
 ### 🎯 **Kernfunktionen**

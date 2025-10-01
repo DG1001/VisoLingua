@@ -1,8 +1,28 @@
 # VisoLingua Go - Native Translation Overlay
 
-Go + Wails implementation of VisoLingua for native cross-platform apps.
+⚠️ **EXPERIMENTAL - NOT PRODUCTION READY** ⚠️
 
-## Why Go + Wails?
+## ⚠️ Known Issues - Not Recommended for Use
+
+**This version has critical bugs and is NOT working properly:**
+
+### Critical Issue: Screen Capture Failure
+- **Problem**: Screenshot capture only captures the app's own window, not the user's screen content
+- **Root Cause**: Likely incompatibility between Wails window management system and the Go screenshot library
+- **Impact**: The app cannot capture text from other applications, making it unusable for translation purposes
+- **Status**: Unresolved after multiple attempted fixes (transparent windows, frameless windows, coordinate-based capture)
+
+### Recommendation
+**Use the [Rust version](../visolingua-rust/) instead** - it is fully working and production-ready with identical features.
+
+This Go version remains in the repository as:
+- Reference implementation
+- Potential future experimentation
+- Comparison for developers evaluating Go/Wails vs Rust/Tauri
+
+---
+
+## Why Go + Wails? (Original Goals)
 
 - **Simple syntax** - Easiest migration from Python
 - **Single binary** - No runtime dependencies
@@ -84,14 +104,14 @@ Same as other versions - config file at:
 - **macOS**: `~/Library/Application Support/visolingua/config.toml`
 - **Linux**: `~/.config/visolingua/config.toml`
 
-## Features
+## Features (Implemented but Not Functional)
 
-- ✅ **Control panel window** - Small always-on-top window
-- ✅ **Manual coordinate capture** - Enter X, Y, Width, Height or capture center
-- ✅ **LLM integration** - Supports Gemini, OpenAI, Ollama
-- ✅ **Ask AI feature** - Ask questions about translations
-- ✅ **Small binary** - Only ~12MB
-- ✅ **Cross-platform** - Windows, macOS, Linux
+- ⚠️ **Control panel window** - Small always-on-top window (works)
+- ❌ **Manual coordinate capture** - Enter X, Y, Width, Height or capture center (only captures app window)
+- ✅ **LLM integration** - Supports Gemini, OpenAI, Ollama (works if capture worked)
+- ✅ **Ask AI feature** - Ask questions about translations (works if capture worked)
+- ✅ **Small binary** - Only ~12MB (works)
+- ✅ **Cross-platform** - Windows, macOS, Linux (compiles, but capture broken)
 
 ## How to Use
 
@@ -118,7 +138,7 @@ Same as other versions - config file at:
 
 **Go is the middle ground** - easier to develop than Rust, much smaller than Python!
 
-## Advantages of Go Version
+## Theoretical Advantages of Go Version (If It Worked)
 
 ### vs Python:
 - ✅ **75% smaller** (~12 MB vs ~50 MB)
@@ -131,6 +151,7 @@ Same as other versions - config file at:
 - ✅ **Faster builds** (30s vs 5 min)
 - ✅ **Simpler error handling**
 - ❌ Slightly larger binaries
+- ❌ **Screen capture broken** (Rust version works perfectly)
 
 ## Project Structure
 
@@ -182,22 +203,20 @@ sudo apt-get install libgtk-3-dev libwebkit2gtk-4.0-dev gcc pkg-config
 ### WebView2 error on Windows
 Download and install: https://go.microsoft.com/fwlink/p/?LinkId=2124703
 
-## Why Choose Go?
+## Which Version Should You Use?
 
-**Choose Go if:**
-- ✅ You prefer Go's simple syntax over Rust
-- ✅ You want faster build times
-- ✅ Binary size of 12 MB is acceptable
-- ✅ You're comfortable with ~1s startup time
+**⚠️ Do NOT choose the Go version** - it has critical bugs and doesn't work properly.
 
 **Choose Rust if:**
-- You need the absolute smallest binary (~8 MB)
-- You need the fastest startup (~0.5s)
-- You're okay with longer build times
+- ✅ You want a working, production-ready native binary
+- ✅ You need the absolute smallest binary (~8 MB)
+- ✅ You need the fastest startup (~0.5s)
+- ✅ Screen capture needs to work reliably
 
 **Choose Python if:**
-- You need to iterate quickly
-- Binary size doesn't matter
-- You don't want to learn Go/Rust
+- ✅ You need a working, tested implementation
+- ✅ You need to iterate/modify quickly
+- ✅ Binary size doesn't matter
+- ✅ You're comfortable with Python runtime
 
-All three versions have **identical features**!
+**The Go version is currently non-functional** due to screen capture issues.
