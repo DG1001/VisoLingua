@@ -32,23 +32,26 @@
         }
 
         #instructions {
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.5);
             color: white;
-            padding: 20px;
-            border-radius: 8px;
+            padding: 10px 15px;
+            border-radius: 6px;
             text-align: center;
             pointer-events: none;
-            max-width: 300px;
+            max-width: 220px;
+            opacity: 0.8;
         }
 
         #instructions h2 {
-            margin-bottom: 10px;
-            font-size: 18px;
+            margin-bottom: 5px;
+            font-size: 13px;
+            font-weight: 500;
         }
 
         #instructions p {
-            font-size: 14px;
-            line-height: 1.6;
+            font-size: 11px;
+            line-height: 1.3;
+            margin: 2px 0;
         }
 
         .status {
@@ -71,9 +74,8 @@
 <body>
     <div id="capture-area">
         <div id="instructions">
-            <h2>🎯 VisoLingua Capture</h2>
-            <p>Position this window over the text you want to translate</p>
-            <p><strong>Click anywhere</strong> to capture</p>
+            <h2>📸 VisoLingua</h2>
+            <p>Position over text and click</p>
         </div>
         <div id="status" class="status">Capturing...</div>
     </div>
@@ -117,20 +119,11 @@
                 const position = await window.outerPosition();
                 const size = await window.outerSize();
 
-                // Debug: Show what we got
-                const debugInfo = `Position: ${JSON.stringify(position)}\nSize: ${JSON.stringify(size)}`;
-                alert(debugInfo);
-                console.log('Window position:', position);
-                console.log('Window size:', size);
-
-                // Get window bounds - check different possible property names
+                // Get window bounds
                 const x = position.x ?? position.X ?? position[0];
                 const y = position.y ?? position.Y ?? position[1];
                 const width = size.width ?? size.w ?? size.Width ?? size[0];
                 const height = size.height ?? size.h ?? size.Height ?? size[1];
-
-                alert(`Extracted: x=${x}, y=${y}, width=${width}, height=${height}`);
-                console.log('Extracted values:', { x, y, width, height });
 
                 // For transparent windows, capture the entire window area
                 // No need to adjust for borders on transparent overlay
