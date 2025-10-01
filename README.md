@@ -1,16 +1,16 @@
 # VisoLingua - Live Translation Overlay Tool
 
-Ein benutzerfreundliches Desktop-Tool für Live-Übersetzung mit transparentem Overlay-Fenster, optimiert für chinesische Texte.
+A user-friendly desktop tool for live translation with transparent overlay window, optimized for Chinese texts.
 
 ## Screenshots
 
-### Scan-Fenster (Capture-Modus)
-![Scan Fenster](screen_scan.png)
-*Transparentes Overlay-Fenster zum Erfassen von Text für die Übersetzung*
+### Scan Window (Capture Mode)
+![Scan Window](screen_scan.png)
+*Transparent overlay window for capturing text for translation*
 
-### Übersetzungsergebnis
-![Übersetzung](screen_translate.png)
-*Ergebnis-Fenster mit der übersetzten Text-Ausgabe*
+### Translation Result
+![Translation](screen_translate.png)
+*Result window with translated text output*
 
 ## 🚀 Available Implementations
 
@@ -57,212 +57,212 @@ See each version's README for detailed setup instructions.
 
 ## Features
 
-### 🎯 **Kernfunktionen**
-- **Transparentes Capture-Fenster**: Verschiebbar und größenverstellbar über anderen Anwendungen
-- **LLM-Integration**: Unterstützt Gemini 2.5 Flash und GPT-4 Mini/Nano  
-- **Ein-Klick-Übersetzung**: Einfach in das Overlay-Fenster klicken
-- **Dual-Modus-System**: Nahtloser Wechsel zwischen Capture- und Ergebnis-Modus
-- **🤖 Ask AI**: Stelle Fragen zu Übersetzungsergebnissen für Kontext, Erklärungen und Details
+### 🎯 **Core Functions**
+- **Transparent Capture Window**: Movable and resizable over other applications
+- **LLM Integration**: Supports Gemini 2.5 Flash and GPT-4 Mini/Nano
+- **One-Click Translation**: Simply click in the overlay window
+- **Dual-Mode System**: Seamless switching between capture and result mode
+- **🤖 Ask AI**: Ask questions about translation results for context, explanations and details
 
-### 🌏 **Sprachunterstützung**
-- **Chinesisch-Fokus**: Optimiert für vereinfachte und traditionelle chinesische Zeichen
-- **Automatische Spracherkennung**: Erkennt Quellsprache automatisch
-- **Mehrsprachig**: Unterstützt viele Sprachen → Deutsch
+### 🌏 **Language Support**
+- **Chinese Focus**: Optimized for simplified and traditional Chinese characters
+- **Automatic Language Detection**: Automatically detects source language
+- **Multilingual**: Supports many languages → German
 
 ### ⚡ **Performance & UX**
-- **Intelligentes Caching**: Identische Screenshots werden nicht erneut übersetzt
-- **Verlauf**: Speicherung und Abruf der letzten Übersetzungen
+- **Intelligent Caching**: Identical screenshots are not translated again
+- **History**: Storage and retrieval of recent translations
 - **Cross-Platform**: Windows, Linux, macOS
-- **DPI-Aware**: Perfekte Darstellung auf High-DPI-Displays
+- **DPI-Aware**: Perfect rendering on High-DPI displays
 
 ## 🚀 Quick Start
 
 ### Installation
 
-#### Option 1: Direkt mit Python (Empfohlen)
+#### Option 1: Direct with Python (Recommended)
 ```bash
-# 1. Repository klonen
+# 1. Clone repository
 git clone https://github.com/username/VisoLingua.git
 cd VisoLingua
 
-# 2. Python 3.8+ installieren (falls nicht vorhanden)
-# 3. Dependencies installieren
+# 2. Install Python 3.8+ (if not already installed)
+# 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. App starten
+# 4. Start app
 python main.py
 ```
 
-#### Option 2: Lokale EXE erstellen
+#### Option 2: Create Local EXE
 ```bash
-# Nach Installation der Dependencies:
+# After installing dependencies:
 python build_exe.py
-# Erstellt dist/VisoLingua.exe (kann Virenwarnungen auslösen)
+# Creates dist/VisoLingua.exe (may trigger antivirus warnings)
 ```
 
-### Erste Einrichtung
+### Initial Setup
 ```bash
-# 1. Konfigurationsdatei erstellen
+# 1. Create configuration file
 cp config/config_sample.ini config/config.ini
 
-# 2. API-Schlüssel eintragen (config/config.ini bearbeiten)
-# - Gemini API Key von https://aistudio.google.com/
-# - Oder OpenAI API Key von https://platform.openai.com/
+# 2. Enter API keys (edit config/config.ini)
+# - Gemini API Key from https://aistudio.google.com/
+# - Or OpenAI API Key from https://platform.openai.com/
 
-# 3. App starten
+# 3. Start app
 python main.py
 
-# Bei erstem Start:
-# 1. API-Schlüssel in Settings überprüfen/eingeben
-# 2. Standard-LLM auswählen (empfohlen: Gemini 2.5 Flash)
-# 3. Fertig!
+# On first start:
+# 1. Check/enter API key in Settings
+# 2. Select default LLM (recommended: Gemini 2.5 Flash)
+# 3. Done!
 ```
 
-### API-Schlüssel konfigurieren
-- **Gemini API**: [Google AI Studio](https://aistudio.google.com/) → API Key erstellen
-- **OpenAI API**: [OpenAI Platform](https://platform.openai.com/) → Secret Key erstellen
+### Configure API Keys
+- **Gemini API**: [Google AI Studio](https://aistudio.google.com/) → Create API Key
+- **OpenAI API**: [OpenAI Platform](https://platform.openai.com/) → Create Secret Key
 
-## 💡 Verwendung
+## 💡 Usage
 
-### Grundlegende Bedienung
-1. **App starten**: `python main.py`
-2. **Scan-Fenster positionieren**: Über den zu übersetzenden Text ziehen
-3. **Screenshot aufnehmen**: Ins rote Overlay-Fenster klicken
-4. **Übersetzung erhalten**: Automatischer Wechsel zum Ergebnis-Fenster
-5. **🤖 AI fragen** (optional): Frage zur Übersetzung in das Textfeld eingeben und "Ask AI" klicken
-6. **Zurück zum Scan**: "Back to Capture" Button oder Fenster schließen
+### Basic Operation
+1. **Start app**: `python main.py`
+2. **Position scan window**: Drag over the text to be translated
+3. **Take screenshot**: Click in the red overlay window
+4. **Get translation**: Automatic switch to result window
+5. **🤖 Ask AI** (optional): Enter question about translation in text field and click "Ask AI"
+6. **Back to scan**: "Back to Capture" button or close window
 
-### Ask AI Funktion
-Nach einer Übersetzung können Sie dem AI Fragen über das Ergebnis stellen:
-- **Beispiele**: "Was bedeutet dieser Kontext?", "Gibt es alternative Übersetzungen?", "Erkläre die Grammatik"
-- **Antwort**: Wird direkt im Ergebnis-Fenster unter der ursprünglichen Übersetzung angezeigt
-- **Nutzung**: Gleiche LLM-Konfiguration wie für Übersetzungen (Gemini/OpenAI/Ollama)
+### Ask AI Function
+After a translation, you can ask the AI questions about the result:
+- **Examples**: "What does this context mean?", "Are there alternative translations?", "Explain the grammar"
+- **Response**: Displayed directly in the result window below the original translation
+- **Usage**: Same LLM configuration as for translations (Gemini/OpenAI/Ollama)
 
-### Modi wechseln
-- **Doppelklick** auf Overlay-Titelleiste → Zum Ergebnis-Fenster
-- **"Back to Capture"** Button → Zurück zum Scan-Fenster
-- **Fenster schließen** → Zurück zum Scan-Fenster
-- **X-Button am Overlay** → App beenden
+### Switch Modes
+- **Double-click** on overlay title bar → To result window
+- **"Back to Capture"** button → Back to scan window
+- **Close window** → Back to scan window
+- **X-button on overlay** → Exit app
 
 ### Hotkeys & Shortcuts
-- `Strg+Tab`: Zwischen Modi wechseln
-- `Strg+C`: Übersetzung kopieren (im Ergebnis-Modus)
-- `Esc`: Ergebnis-Fenster schließen (zurück zu Capture)
-- **Doppelklick Titelleiste**: Mode wechseln
+- `Ctrl+Tab`: Switch between modes
+- `Ctrl+C`: Copy translation (in result mode)
+- `Esc`: Close result window (back to capture)
+- **Double-click title bar**: Switch mode
 
-## Projektstruktur
+## Project Structure
 
 ```
 VisoLingua/
-├── main.py              # Hauptprogramm
+├── main.py              # Main program
 ├── config/
-│   ├── settings.py      # Konfigurationsverwaltung
-│   ├── config.ini       # Benutzereinstellungen (wird lokal erstellt)
-│   └── config_sample.ini # Konfigurationsvorlage
+│   ├── settings.py      # Configuration management
+│   ├── config.ini       # User settings (created locally)
+│   └── config_sample.ini # Configuration template
 ├── ui/
-│   ├── overlay.py       # Transparentes Overlay
-│   └── result_window.py # Ergebnisfenster mit Ask AI Funktion
+│   ├── overlay.py       # Transparent overlay
+│   └── result_window.py # Result window with Ask AI function
 ├── core/
-│   ├── screenshot.py    # Screenshot-Erfassung
-│   └── translator.py    # LLM-Integration
+│   ├── screenshot.py    # Screenshot capture
+│   └── translator.py    # LLM integration
 ├── utils/
-│   ├── helpers.py       # Hilfsfunktionen
-│   └── constants.py     # Konstanten
+│   ├── helpers.py       # Helper functions
+│   └── constants.py     # Constants
 └── requirements.txt     # Dependencies
 ```
 
-## 🤖 Unterstützte LLMs
+## 🤖 Supported LLMs
 
-### ☁️ Cloud LLMs (API-Keys erforderlich)
+### ☁️ Cloud LLMs (API Keys Required)
 
-| LLM | Geschwindigkeit | Kosten | Qualität | Empfehlung |
-|-----|----------------|--------|----------|------------|
-| **Gemini 2.5 Flash** | ⚡⚡⚡ | 💰 | ⭐⭐⭐⭐ | ✅ **Empfohlen** |
-| **GPT-4.1 Mini** | ⚡⚡ | 💰💰 | ⭐⭐⭐⭐⭐ | Für beste Qualität |
-| **GPT-4.1 Nano** | ⚡⚡⚡ | 💰 | ⭐⭐⭐ | Experimentell |
+| LLM | Speed | Cost | Quality | Recommendation |
+|-----|-------|------|---------|----------------|
+| **Gemini 2.5 Flash** | ⚡⚡⚡ | 💰 | ⭐⭐⭐⭐ | ✅ **Recommended** |
+| **GPT-4.1 Mini** | ⚡⚡ | 💰💰 | ⭐⭐⭐⭐⭐ | For best quality |
+| **GPT-4.1 Nano** | ⚡⚡⚡ | 💰 | ⭐⭐⭐ | Experimental |
 
-### 🏠 Lokale LLMs mit Ollama (100% privat, kostenlos)
+### 🏠 Local LLMs with Ollama (100% private, free)
 
-| Modell | Parameter | Downloads | Performance | Chinesisch | Beschreibung |
-|--------|-----------|-----------|-------------|------------|-------------|
-| **gemma3** | 1b-27b | 9.4M | ⚡⚡⚡ | ⭐⭐⭐ | Aktuellstes Modell für Single-GPU |
-| **qwen2.5-vl** | 3b-72b | 400K | ⚡⚡⚡ | ⭐⭐⭐⭐⭐ | Flagship Vision-Modell von Qwen |
-| **llava** | 7b-34b | 7.9M | ⚡⚡ | ⭐⭐⭐⭐ | Bewährtes Vision-Sprachmodell |
-| **minicpm-v** | 8b | 2.4M | ⚡⚡ | ⭐⭐⭐⭐ | Kompaktes multimodales Modell |
-| **llama3.2-vision** | 11b-90b | 2.2M | ⚡⚡ | ⭐⭐⭐ | Meta's Vision-Modell |
-| **llava-llama3** | 8b | 1.3M | ⚡⚡ | ⭐⭐⭐⭐ | LLaVA mit Llama 3 Basis |
-| **llama4** | 16x17b-128x17b | 467K | ⚡ | ⭐⭐⭐ | Meta's neuestes multimodales Modell |
-| **moondream** | 1.8b | 223K | ⚡⚡⚡ | ⭐⭐ | Optimiert für Edge-Geräte |
+| Model | Parameters | Downloads | Performance | Chinese | Description |
+|-------|-----------|-----------|-------------|---------|-------------|
+| **gemma3** | 1b-27b | 9.4M | ⚡⚡⚡ | ⭐⭐⭐ | Latest model for single GPU |
+| **qwen2.5-vl** | 3b-72b | 400K | ⚡⚡⚡ | ⭐⭐⭐⭐⭐ | Qwen's flagship vision model |
+| **llava** | 7b-34b | 7.9M | ⚡⚡ | ⭐⭐⭐⭐ | Proven vision-language model |
+| **minicpm-v** | 8b | 2.4M | ⚡⚡ | ⭐⭐⭐⭐ | Compact multimodal model |
+| **llama3.2-vision** | 11b-90b | 2.2M | ⚡⚡ | ⭐⭐⭐ | Meta's vision model |
+| **llava-llama3** | 8b | 1.3M | ⚡⚡ | ⭐⭐⭐⭐ | LLaVA with Llama 3 base |
+| **llama4** | 16x17b-128x17b | 467K | ⚡ | ⭐⭐⭐ | Meta's latest multimodal model |
+| **moondream** | 1.8b | 223K | ⚡⚡⚡ | ⭐⭐ | Optimized for edge devices |
 
 #### Ollama Setup:
 ```bash
-# 1. Ollama installieren (https://ollama.ai)
-# 2. Modell pullen (Beispiel):
+# 1. Install Ollama (https://ollama.ai)
+# 2. Pull model (example):
 ollama pull llava:7b
 
 # 3. In VisoLingua: Settings → Local Ollama → Enable
 ```
 
-## 📋 Systemanforderungen
+## 📋 System Requirements
 
 ### Minimum (Cloud LLMs)
 - **Python**: 3.8+
-- **Betriebssystem**: Windows 10+, Linux (GUI), macOS 10.14+
-- **RAM**: 2GB verfügbar
-- **Internet**: Für LLM-API-Calls
+- **Operating System**: Windows 10+, Linux (GUI), macOS 10.14+
+- **RAM**: 2GB available
+- **Internet**: For LLM API calls
 
-### Empfohlen (Cloud LLMs) 
+### Recommended (Cloud LLMs)
 - **Python**: 3.9+
 - **RAM**: 4GB+
-- **Display**: 1920x1080+ (High-DPI unterstützt)
-- **Internet**: Stabile Breitbandverbindung
+- **Display**: 1920x1080+ (High-DPI supported)
+- **Internet**: Stable broadband connection
 
-### Lokale LLMs (Ollama)
-- **GPU**: NVIDIA mit 6GB+ VRAM (empfohlen) oder CPU-only
-- **RAM**: 16GB+ (je nach Modell, siehe Tabelle oben)
-- **Speicher**: 5-40GB für Modelle
-- **Ollama**: Installiert und läuft lokal
+### Local LLMs (Ollama)
+- **GPU**: NVIDIA with 6GB+ VRAM (recommended) or CPU-only
+- **RAM**: 16GB+ (depends on model, see table above)
+- **Storage**: 5-40GB for models
+- **Ollama**: Installed and running locally
 
-## 🛠️ Technische Details
+## 🛠️ Technical Details
 
-### Architektur
+### Architecture
 - **Frontend**: tkinter (Cross-Platform GUI)
 - **Screenshot**: mss + PIL ImageGrab (Fallback)
-- **LLM-APIs**: aiohttp (Async requests)
-- **Threading**: Async/await für Non-blocking UI
+- **LLM APIs**: aiohttp (Async requests)
+- **Threading**: Async/await for non-blocking UI
 
-### Besondere Features
-- **Thread-safe Screenshot-Erfassung** mit MSS-Fallbacks
-- **DPI-Awareness** für Windows High-DPI-Displays  
-- **Intelligentes Caching** mit MD5-Hash-Vergleich
-- **Robuste Fehlerbehandlung** mit mehreren Fallback-Methoden
+### Special Features
+- **Thread-safe screenshot capture** with MSS fallbacks
+- **DPI-Awareness** for Windows High-DPI displays
+- **Intelligent caching** with MD5 hash comparison
+- **Robust error handling** with multiple fallback methods
 
-### Inspiriert von
-- [OverText](https://github.com/thiswillbeyourgithub/OverText) - Transparente Overlay-Funktionalität
-- Entwickelt für defensive Sicherheitszwecke und Sprachlernunterstützung
+### Inspired by
+- [OverText](https://github.com/thiswillbeyourgithub/OverText) - Transparent overlay functionality
+- Developed for defensive security purposes and language learning support
 
-## ⚠️ Wichtige Sicherheitshinweise
+## ⚠️ Important Security Notes
 
-**VERWENDUNG AUF EIGENE GEFAHR!**
+**USE AT YOUR OWN RISK!**
 
-Wir können nicht garantieren, dass die Applikation fehlerfrei ist und immer nur den ausgewählten Scan-Bereich an das LLM sendet. Zur Gewährleistung maximaler Privatsphäre und Sicherheit ist im Zweifel die Verwendung eines lokalen, selbst gehosteten LLM für die Übersetzung angeraten.
+We cannot guarantee that the application is error-free and always only sends the selected scan area to the LLM. To ensure maximum privacy and security, using a local, self-hosted LLM for translation is recommended when in doubt.
 
 ### 🛡️ Anti-Virus False-Positives
-PyInstaller-EXE-Dateien werden häufig fälschlicherweise als Virus erkannt. **Empfehlung: Nutzen Sie Python direkt** (`python main.py`) statt einer EXE-Datei.
+PyInstaller EXE files are often incorrectly detected as viruses. **Recommendation: Use Python directly** (`python main.py`) instead of an EXE file.
 
-### 🏠 Lokale LLM-Alternative (verfügbar!)
-VisoLingua unterstützt jetzt **Ollama** für vollständig private Übersetzungen ohne externe API-Calls. Aktivieren Sie lokale LLMs in den Einstellungen.
+### 🏠 Local LLM Alternative (available!)
+VisoLingua now supports **Ollama** for completely private translations without external API calls. Enable local LLMs in the settings.
 
 ## 🆘 Support & Troubleshooting
 
-### Häufige Probleme
-- **Fenster nicht sichtbar**: Transparenz in `config.ini` anpassen
-- **Screenshot-Fehler**: App läuft mit Administrator-Rechten starten
-- **API-Fehler**: API-Schlüssel und Internetverbindung prüfen
-- **DPI-Probleme**: Automatisch behoben mit DPI-Awareness
+### Common Issues
+- **Window not visible**: Adjust transparency in `config.ini`
+- **Screenshot error**: Start app with administrator rights
+- **API error**: Check API key and internet connection
+- **DPI problems**: Automatically fixed with DPI-Awareness
 
-Ausführliche Lösungen siehe: [SETUP.md](SETUP.md)
+For detailed solutions see: [SETUP.md](SETUP.md)
 
-## 📄 Lizenz
+## 📄 License
 
-Dieses Projekt dient ausschließlich **defensiven Sicherheitszwecken** und **Sprachlernunterstützung**.
+This project is exclusively for **defensive security purposes** and **language learning support**.
