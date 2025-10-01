@@ -77,26 +77,65 @@ func (t *Translator) translateWithGemini(imageBase64 string) (string, error) {
 	}
 
 	body, _ := json.Marshal(payload)
+	fmt.Printf("Gemini request URL: %s\n", url)
+
 	resp, err := t.client.Post(url, "application/json", bytes.NewBuffer(body))
 	if err != nil {
-		return "", err
+		fmt.Printf("Gemini request error: %v\n", err)
+		return "", fmt.Errorf("request failed: %w", err)
 	}
 	defer resp.Body.Close()
 
+	// Read response body
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("Failed to read response: %v\n", err)
+		return "", fmt.Errorf("failed to read response: %w", err)
+	}
+
+	fmt.Printf("Gemini response status: %d\n", resp.StatusCode)
+	fmt.Printf("Gemini response: %s\n", string(responseBody))
+
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("API error (%d): %s", resp.StatusCode, string(responseBody))
+	}
+
 	var result map[string]interface{}
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return "", err
+	if err := json.Unmarshal(responseBody, &result); err != nil {
+		fmt.Printf("JSON parse error: %v\n", err)
+		return "", fmt.Errorf("failed to parse JSON: %w", err)
 	}
 
-	// Extract text from response
-	candidates := result["candidates"].([]interface{})
-	if len(candidates) == 0 {
-		return "", fmt.Errorf("no response from Gemini")
+	// Extract text from response with error checking
+	candidates, ok := result["candidates"].([]interface{})
+	if !ok || len(candidates) == 0 {
+		return "", fmt.Errorf("no candidates in response")
 	}
 
-	content := candidates[0].(map[string]interface{})["content"].(map[string]interface{})
-	parts := content["parts"].([]interface{})
-	text := parts[0].(map[string]interface{})["text"].(string)
+	candidate0, ok := candidates[0].(map[string]interface{})
+	if !ok {
+		return "", fmt.Errorf("invalid candidate format")
+	}
+
+	content, ok := candidate0["content"].(map[string]interface{})
+	if !ok {
+		return "", fmt.Errorf("invalid content format")
+	}
+
+	parts, ok := content["parts"].([]interface{})
+	if !ok || len(parts) == 0 {
+		return "", fmt.Errorf("no parts in content")
+	}
+
+	part0, ok := parts[0].(map[string]interface{})
+	if !ok {
+		return "", fmt.Errorf("invalid part format")
+	}
+
+	text, ok := part0["text"].(string)
+	if !ok {
+		return "", fmt.Errorf("no text in part")
+	}
 
 	return text, nil
 }
