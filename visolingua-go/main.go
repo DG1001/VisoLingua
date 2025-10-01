@@ -61,24 +61,23 @@ func main() {
 	}
 
 	err = wails.Run(&options.App{
-		Title:  "VisoLingua",
-		Width:  400,
-		Height: 300,
+		Title:  "VisoLingua - Capture",
+		Width:  500,
+		Height: 400,
 		AssetServer: &assetserver.Options{
 			Assets: distFS,
 		},
-		BackgroundColour: &options.RGBA{R: 255, G: 68, B: 68, A: 30},
+		BackgroundColour: &options.RGBA{R: 26, G: 26, B: 26, A: 255},
 		OnStartup:        app.startup,
 		Bind: []interface{}{
 			app,
 		},
-		Logger:          logger.NewDefaultLogger(),
-		AlwaysOnTop:     true,
-		Frameless:       true,
+		Logger:      logger.NewDefaultLogger(),
+		AlwaysOnTop: true,
+		Frameless:   false,
 		Windows: &windows.Options{
-			WebviewIsTransparent: true,
-			WindowIsTranslucent:  true,
-			BackdropType:         windows.Mica,
+			WebviewIsTransparent: false,
+			WindowIsTranslucent:  false,
 		},
 	})
 
